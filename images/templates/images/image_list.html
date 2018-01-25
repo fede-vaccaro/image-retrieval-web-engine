@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}The Image List{% endblock %}
+{% block content %}
+ <h1>Here's all your images</h1>
+<p><a href="{% url 'search' %}">Search images</a></p>
+{% for image in image_list %}
+<h2>
+ <h3>
+    {{ image.title }}
+ </h3>
+    <img src= "{{ MEDIA_URL }}{{ image.image }}" alt="img">
+    <p>{{ image.quote }}</p>
+    <p class="date">{{ image.created }}</p>
+</h2>
+{% endfor %}
+{% endblock %}
