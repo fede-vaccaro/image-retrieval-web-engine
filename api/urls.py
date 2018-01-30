@@ -6,5 +6,6 @@ urlpatterns = [
     url(r'^image_upload/', csrf_exempt(views.ImageUploadView.as_view())),
     url(r'^query/', views.query),
     url(r'^image_list/', views.image_list),
-    url(r'^get_image/(?P<pk>[-\w]+)/$', views.get_image)
+    url(r'^get_image/(?P<pk>[-\w]+)/$', views.get_image),
+    url(r'^explore/(?P<pk>[0-9]+)/$', views.explore),
 ]

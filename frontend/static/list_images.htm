@@ -1,0 +1,7 @@
+<div ng-controller = "listCtrl" ng-hide="Search">
+    <div ng-repeat="image in imageList">
+        <h3>Image {{ image.pk }}</h3>
+        <a ng-href="{{ image.image }}">
+        <img ng-src="{{ image.image }}" width="200"></a><br />
+    </div>
+</div>
