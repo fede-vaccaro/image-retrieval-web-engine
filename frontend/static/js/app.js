@@ -47,6 +47,19 @@ myApp.controller('myCtrl', ['$scope', 'fileUpload', function($scope, fileUpload)
     
 }]);
 
+myApp.controller('queryCtrl', ['$scope', 'fileUpload', function($scope, fileUpload){
+    
+    $scope.uploadFile = function(){
+        var file = $scope.myFile;
+        var obj = {myfile:file};
+        console.log('file is ' );
+        console.dir(file);
+        var uploadUrl = "/api/query/";
+        fileUpload.uploadFileToUrl(obj, uploadUrl, $scope);
+    };
+    
+}]);
+
 
 
 

@@ -29,6 +29,16 @@
     
 </form>
     
+<form name="uploadForm" ng-controller = "queryCtrl">
+    <input type="file" file-model="myFile" name="fileInput" required>
+    <button ng-click="uploadFile()">Search!</button>
+    <div  ng-show="done" ng-repeat="d in done">
+    <h3>Image {{ d.pk }}</h3>
+        <a ng-href="{{ d.image }}">
+        <img ng-src="{{ d.image }}" width="200"></a><br/></div>
+    
+</form>    
+    
 <div ng-controller = "listCtrl">
     <div ng-repeat="image in imageList">
         <h3>Image {{ image.pk }}</h3>
