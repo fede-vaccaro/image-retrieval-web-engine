@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Include Angular and several angular libraries -->
+    <script src="modules/angular.min.js"></script>
+
+    <!-- Include our app -->
+    <script src="js/app.js"></script>
+
+    
+    </head>
+<body>
+
+<div id="header">
+<span class="logo">CN-Search</span>
+</div>
+    
+<title>Deep Learning Image retriever!</title>
+    
+
+<div ng-app = "myApp"> <form name="uploadForm" ng-controller = "myCtrl">
+    
+    Title: <input type="text" ng-model="myTitle", name="title" required>
+    <input type="file" file-model="myFile" name="fileInput" required>
+    <br><button ng-disabled="uploadForm.title.$error.required", ng-click="uploadFile()">upload me!</button>
+        <h3 ng-show="done">Image {{ done.pk }}</h3>
+        <a ng-href="{{ done.image }}">
+        <img ng-src="{{ done.image }}" width="200"></a><br />
+    
+</form>
+    
+<div ng-controller = "listCtrl">
+    <div ng-repeat="image in imageList">
+        <h3>Image {{ image.pk }}</h3>
+        <a ng-href="{{ image.image }}">
+        <img ng-src="{{ image.image }}" width="200"></a><br />
+    </div>
+</div>    
+
+</div>
+    
+<!-- List images   
+<div ng-app="imageuploadFrontendApp" ng-controller="MainCtrl">
+    
+    <div ng-repeat="image in images">
+        <h3>Image {{ image.pk }}</h3>
+        <a ng-href="{{ image.image }}">
+        <img ng-src="{{ image.image }}" width="200"></a><br />
+    </div>
+</div>-->  
+
+</body>
+</html> 

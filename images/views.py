@@ -66,9 +66,11 @@ def image_sorted(request):
 
 
 def image_sorted(request, image_path):
-    query_signature = extract_feat(settings.MEDIA_ROOT + "/temp/" + image_path + ".jpg")  # a NumPy-Array object
     start = time.time()
     print("start counting")
+    query_signature = extract_feat(settings.MEDIA_ROOT + "/temp/" + image_path + ".jpg")  # a NumPy-Array object
+    #print(query_signature)
+
 
     value_dict = {}
     for image in Image.objects.all():
