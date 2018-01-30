@@ -1,0 +1,9 @@
+<form name="uploadForm" ng-controller = "queryCtrl">
+    <input type="file" file-model="myFile" name="fileInput" required>
+    <button ng-click="uploadFile()">Search!</button>
+    <div  ng-show="done" ng-repeat="d in done">
+    <h3>Image {{ d.pk }}</h3>
+        <a ng-href="{{ d.image }}">
+        <img ng-src="{{ d.image }}" width="200"></a><br/></div>
+    <div ng-hide="done" ng-include="'list_images.htm'"> </div>
+</form> 

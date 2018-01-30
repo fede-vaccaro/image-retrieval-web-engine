@@ -1,0 +1,8 @@
+<form name="uploadForm" ng-controller = "myCtrl">    
+    Title: <input type="text" ng-model="myTitle", name="title" required>
+    <input type="file" file-model="myFile" name="fileInput" required>
+    <button ng-disabled="uploadForm.title.$error.required", ng-click="uploadFile()">upload me!</button>
+        <h3 ng-show="done">Image {{ done.pk }}</h3>
+        <a ng-href="{{ done.image }}">
+        <img ng-src="{{ done.image }}" width="200"></a><br/>    
+</form>

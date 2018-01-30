@@ -1,4 +1,17 @@
-var myApp = angular.module('myApp', []);
+var myApp = angular.module('myApp', ["ngRoute"]);
+
+myApp.config(function($routeProvider) {
+    $routeProvider
+    .when("/", {
+        templateUrl : "list_images.htm"
+    })
+    .when("/search", {
+        templateUrl : "search.htm"
+    });
+    /*.when("/upload", {
+        templateUrl : "upload.htm"
+    });*/
+});
 
 myApp.directive('fileModel', ['$parse', function ($parse) {
     return {
@@ -56,6 +69,7 @@ myApp.controller('queryCtrl', ['$scope', 'fileUpload', function($scope, fileUplo
         console.dir(file);
         var uploadUrl = "/api/query/";
         fileUpload.uploadFileToUrl(obj, uploadUrl, $scope);
+        $scope.Search = true;
     };
     
 }]);
@@ -65,11 +79,15 @@ myApp.controller('queryCtrl', ['$scope', 'fileUpload', function($scope, fileUplo
 
 //Image List Controller
 myApp.controller('listCtrl', function($scope, $http){
-    $http.get("/api/image_list/").then(function(response){
+    
+    $http.get("/api/image_list/",  { cache: true }).then(function(response){
         $scope.imageList = response.data;
     }, function(response){
     })
+
 } )
+
+
 
 
 

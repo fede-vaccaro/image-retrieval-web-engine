@@ -36,10 +36,35 @@ def image_list(request):
 
 
 @csrf_exempt
+def explore(request, pk):
+    if request.method == 'GET':
+        sign = Image.objects.get(pk=pk).signature
+        query = JSONVectConverter.json_to_vect(sign)
+
+        value_dict = {}
+        for image in Image.objects.all():
+            S = image.signature
+            value_dict[image.id] = np.dot(
+                JSONVectConverter.json_to_vect(S),
+                query.T
+            ).astype(float)
+
+        flat = sorted(value_dict, key=value_dict.__getitem__)[::-1]  # lista ordinata delle PK degli elementi da visualizzare
+        qs_new = []
+        nToDisplay = 30
+        flat = flat[:nToDisplay]
+        for i in range(len(flat)):
+            qs_new.append(Image.objects.get(id=flat[i]))
+        images_serializer = ImageSerializer(qs_new, many=True)
+        return JSONResponse(images_serializer.data, status=status.HTTP_202_ACCEPTED)
+
+
+@csrf_exempt
 def get_image(request, pk):
     if request.method == 'GET':
         image = get_object_or_404(Image.objects.all(), pk=pk)
         return JSONResponse(ImageSerializer(image).data, status=status.HTTP_202_ACCEPTED)
+
 
 @csrf_exempt
 def query(request):
@@ -64,7 +89,8 @@ def query(request):
                 query_signature.T
             ).astype(float)
 
-        flat = sorted(value_dict, key=value_dict.__getitem__)[::-1]  # lista ordinata delle PK degli elementi da visualizzare
+        flat = sorted(value_dict, key=value_dict.__getitem__)[
+               ::-1]  # lista ordinata delle PK degli elementi da visualizzare
         # print(sorted(value_dict, key=value_dict.__getitem__))
         # print(sorted(value_dict.values()))
         end = time.time()
@@ -80,6 +106,7 @@ def query(request):
         print(end - start)
         return JSONResponse(images_serializer.data, status=status.HTTP_202_ACCEPTED)
 
+
 class ImageUploadView(views.APIView):
     parser_classes = (MultiPartParser,)
 
@@ -91,6 +118,3 @@ class ImageUploadView(views.APIView):
             return HttpResponse("something went wrong.", status=status.HTTP_400_BAD_REQUEST)
         new_image = Image.objects.create(title=title_, quote=quote_, image=ImageFile(img))
         return JSONResponse(ImageSerializer(new_image).data, status=status.HTTP_201_CREATED)
-
-
-
