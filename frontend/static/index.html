@@ -20,9 +20,10 @@
 
 <div ng-app = "myApp">
 
-<a href="#/!">List</a>
+<a href="#/!" ng-click="up = false">List</a>
 <a href="#!search" ng-click="up = false">Search</a>
-<a href="#" ng-click="up = !up">Upload</a> 
+<a href="#" ng-click="up = !up">Upload</a>
+<a href="" ng-click="explore_var = !explore_var; console.log(explore_var);">Explore</a> {{explore_var}}
 
     
 <div ng-include="'upload.htm'" ng-show="up"></div>

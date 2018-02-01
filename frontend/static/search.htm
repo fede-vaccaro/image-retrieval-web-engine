@@ -1,11 +1,16 @@
 <form name="uploadForm" ng-controller = "queryCtrl">
-    <input type="file" file-model="myFile" name="fileInput" required>
-    <button ng-click="uploadFile()">Search!</button>
+    <input type="file" file-model="myFile" name="fileInput">
+    <button ng-click="pages.current = 1; uploadFile();">Search!</button>
     <div  ng-show="done" ng-repeat="d in imageList">
-    <h3>Image {{ done }}</h3>
+        
+        
+    <h3>Image {{ d.title }}</h3>
+        <div ng-show="!explore_var">
         <a ng-href="{{ d.image }}">
-        <img ng-src="{{ d.image }}" width="200"></a><br/>
-        <button ng-click="explore(d.pk)">Explore!</button>        
+        <img ng-src="{{ d.image }}" width="200"></a><br/></div>
+        
+        <div ng-show="explore_var">      
+        <img ng-click="pages.current = 1; explore(d.pk)" ng-src="{{ d.image }}" width="200"></a><br/></div>   
     
     </div>
     <div ng-hide="imageList" ng-include="'list_images.htm'"> </div>
@@ -13,7 +18,7 @@
 
 
 
-<div ng-show="searching"><br><a ng-click="previousPage_()" href="">Prev</a><span> </span><a href="" ng-click="nextPage_()">Next</a>
+<div ng-show="searching"><br><a ng-click="previousPage()" href="">Prev</a><span> </span><a href="" ng-click="nextPage()">Next</a>
     <p>
     <br>Current : {{ pages.current }}
     <br>Next : {{ pages.next }}

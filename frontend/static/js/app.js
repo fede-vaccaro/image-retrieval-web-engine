@@ -1,5 +1,6 @@
 var myApp = angular.module('myApp', ["ngRoute"]);
 
+
 myApp.config(function($routeProvider) {
     $routeProvider
     .when("/", {
@@ -45,7 +46,7 @@ myApp.service('fileUpload', ['$http', function ($http) {
     }
 }]);
 
-myApp.controller('myCtrl', ['$scope', 'fileUpload', function($scope, fileUpload){
+myApp.controller('myCtrl', ['$scope', 'fileUpload', '$rootScope', function($scope, fileUpload, $rootScope){
     
     $scope.uploadFile = function(){
         var file = $scope.myFile;
@@ -57,9 +58,13 @@ myApp.controller('myCtrl', ['$scope', 'fileUpload', function($scope, fileUpload)
         fileUpload.uploadFileToUrl(obj, uploadUrl, $scope);
     };
     
+    
+    
     $scope.callBack = function(response){
             $scope.done = response.data;
-            console.log($scope.done);
+            console.log("calling back");
+            console.log($scope.done)
+            $rootScope.$emit("Explore", $scope.done.pk);
     }
     
 }]);
@@ -99,7 +104,6 @@ myApp.controller('queryCtrl', ['$scope', 'fileUpload', '$http', function($scope,
         $scope.explore = function(key){
         console.log("exploring ");
         console.log(key);
-        $scope.pages.current = 1;
         $http.get("/api/explore/" + key + "/" + "?page=" + $scope.pages.current, {cache: true}).then(function(response){
         $scope.imageList = response.data.results;
         console.log($scope.imageList);
@@ -135,7 +139,11 @@ myApp.controller('queryCtrl', ['$scope', 'fileUpload', '$http', function($scope,
         if($scope.pages.current < $scope.pages.last){
             $scope.pages.current += 1;
             $scope.pages.previous += 1;
-            $scope.callBack({data:$scope.pages.key})
+            if(typeof $scope.pages.key == "string"){
+                $scope.callBack({data:$scope.pages.key})
+            }else{
+                $scope.explore($scope.pages.key)
+            }
         }
     }
     
@@ -143,7 +151,11 @@ myApp.controller('queryCtrl', ['$scope', 'fileUpload', '$http', function($scope,
         if($scope.pages.current > 1){
             $scope.pages.current -= 1;
             $scope.pages.previous -= 1;
-            $scope.callBack({data:$scope.pages.key})
+             if(typeof $scope.pages.key == "string"){
+                $scope.callBack({data:$scope.pages.key})
+            }else{
+                $scope.explore($scope.pages.key)
+            }
         }
     }
     
@@ -154,7 +166,12 @@ myApp.controller('queryCtrl', ['$scope', 'fileUpload', '$http', function($scope,
 
 
 //Image List Controller
-myApp.controller('listCtrl', function($scope, $route, $http){
+myApp.controller('listCtrl', ['$scope', '$http', '$rootScope', '$window', function($scope, $http, $rootScope, $window){
+    
+    $scope.reload = function(){
+        $window.location.reload();
+
+    }
     
     $http.get("/api/image_list/", {cache: true}).then(function(response){
         console.log("image_list")
@@ -162,6 +179,12 @@ myApp.controller('listCtrl', function($scope, $route, $http){
         
     }, function(response){
     })
+    
+    $rootScope.$on("Explore", function(event, data){
+        console.log("i'm on air");
+        console.log(data);
+        $scope.explore(data);
+    });    
 
     
     $scope.explore = function(key){
@@ -214,7 +237,7 @@ myApp.controller('listCtrl', function($scope, $route, $http){
     
     
 
-})
+}])
 
 
 

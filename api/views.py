@@ -98,8 +98,10 @@ def get_image(request, pk):
 @csrf_exempt
 def query_up(request):
     if request.method == 'POST':
-        myfile = request.FILES['myfile']
-        #print("XXX" + settings.MEDIA_ROOT + "/temp")
+        try:
+            myfile = request.FILES['myfile']
+        except:
+            return HttpResponse("something went wrong.", status=status.HTTP_400_BAD_REQUEST)
         location = settings.MEDIA_ROOT + "/temp"
         fs = FileSystemStorage(location=location, base_url=settings.MEDIA_URL + "/cache")
         fs.save(myfile.name, myfile)
@@ -155,4 +157,7 @@ class ImageUploadView(views.APIView):
         if (img == "undefined"):
             return HttpResponse("something went wrong.", status=status.HTTP_400_BAD_REQUEST)
         new_image = Image.objects.create(title=title_, quote=quote_, image=ImageFile(img))
+        new_image.signature = JSONVectConverter.vect_to_json(
+            extract_feat(settings.BASE_DIR + "/" + new_image.image.name))
+        new_image.save()
         return JSONResponse(ImageSerializer(new_image).data, status=status.HTTP_201_CREATED)

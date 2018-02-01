@@ -1,9 +1,13 @@
 <div ng-controller = "listCtrl" ng-hide="Search">
     <div ng-repeat="image in imageList">        
         <h3>Image {{ image.title }}</h3>
-        <a ng-disabled="True" ng-href="{{ image.image }}">
-        <img ng-click="explore(image.pk)" ng-src="{{ image.image }}" width="200"></a><br/>
-        <button ng-click="explore(image.pk)">Explore!</button>        
+        <div ng-show="!explore_var">
+        <a ng-href="{{ image.image }}">
+        <img ng-src="{{ image.image }}" width="200"></a><br/></div>
+        
+        <div ng-show="explore_var">      
+        <img ng-click="pages.current = 1; explore(image.pk)" ng-src="{{ image.image }}" width="200"></a><br/></div>
+        <!--<button ng-disabled="explore_var" ng-click="pages.current = 1; explore(image.pk)">Explore!</button>-->        
 </div>
     <div ng-show="exploring"><br><a ng-click="previousPage()" href="">Prev</a><span> </span><a href="" ng-click="nextPage()">Next</a>
     <p>
@@ -12,4 +16,5 @@
     <br>Last : {{ pages.last }}
     <br>Previous : {{ pages.previous }}</p>
     </div>
+    <br><div ng-hide="false"><button ng-click="reload()">More images!</button></div>
 </div>
