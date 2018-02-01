@@ -21,25 +21,16 @@
 <div ng-app = "myApp">
 
 <a href="#/!">List</a>
-<a href="#!search" ng-click="up = False">Search</a>
+<a href="#!search" ng-click="up = false">Search</a>
 <a href="#" ng-click="up = !up">Upload</a> 
- 
+
+    
 <div ng-include="'upload.htm'" ng-show="up"></div>
 <div ng-view></div>   
     
     
 
 </div>
-    
-<!-- List images   
-<div ng-app="imageuploadFrontendApp" ng-controller="MainCtrl">
-    
-    <div ng-repeat="image in images">
-        <h3>Image {{ image.pk }}</h3>
-        <a ng-href="{{ image.image }}">
-        <img ng-src="{{ image.image }}" width="200"></a><br />
-    </div>
-</div>-->  
 
 </body>
 </html> 

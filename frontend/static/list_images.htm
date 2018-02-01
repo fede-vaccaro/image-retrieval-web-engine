@@ -1,7 +1,15 @@
 <div ng-controller = "listCtrl" ng-hide="Search">
-    <div ng-repeat="image in imageList">
-        <h3>Image {{ image.pk }}</h3>
-        <a ng-href="{{ image.image }}">
-        <img ng-src="{{ image.image }}" width="200"></a><br />
+    <div ng-repeat="image in imageList">        
+        <h3>Image {{ image.title }}</h3>
+        <a ng-disabled="True" ng-href="{{ image.image }}">
+        <img ng-click="explore(image.pk)" ng-src="{{ image.image }}" width="200"></a><br/>
+        <button ng-click="explore(image.pk)">Explore!</button>        
+</div>
+    <div ng-show="exploring"><br><a ng-click="previousPage()" href="">Prev</a><span> </span><a href="" ng-click="nextPage()">Next</a>
+    <p>
+    <br>Current : {{ pages.current }}
+    <br>Next : {{ pages.next }}
+    <br>Last : {{ pages.last }}
+    <br>Previous : {{ pages.previous }}</p>
     </div>
 </div>
