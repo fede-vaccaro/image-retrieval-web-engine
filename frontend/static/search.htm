@@ -1,9 +1,24 @@
 <form name="uploadForm" ng-controller = "queryCtrl">
     <input type="file" file-model="myFile" name="fileInput" required>
     <button ng-click="uploadFile()">Search!</button>
-    <div  ng-show="done" ng-repeat="d in done">
-    <h3>Image {{ d.pk }}</h3>
+    <div  ng-show="done" ng-repeat="d in imageList">
+    <h3>Image {{ done }}</h3>
         <a ng-href="{{ d.image }}">
-        <img ng-src="{{ d.image }}" width="200"></a><br/></div>
-    <div ng-hide="done" ng-include="'list_images.htm'"> </div>
+        <img ng-src="{{ d.image }}" width="200"></a><br/>
+        <button ng-click="explore(d.pk)">Explore!</button>        
+    
+    </div>
+    <div ng-hide="imageList" ng-include="'list_images.htm'"> </div>
+    
+
+
+
+<div ng-show="searching"><br><a ng-click="previousPage_()" href="">Prev</a><span> </span><a href="" ng-click="nextPage_()">Next</a>
+    <p>
+    <br>Current : {{ pages.current }}
+    <br>Next : {{ pages.next }}
+    <br>Last : {{ pages.last }}
+    <br>Previous : {{ pages.previous }}</p>
+    </div>
+    
 </form> 

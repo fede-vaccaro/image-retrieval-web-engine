@@ -1,9 +1,9 @@
-from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from .serializers import ImageSerializer
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser, MultiPartParser
-from rest_framework import status, views
+from rest_framework import status, views, response, generics, pagination
+from rest_framework.settings import api_settings
 from django.conf import settings
 from django.http import HttpResponse
 from images.models import Image
@@ -27,6 +27,20 @@ class JSONResponse(HttpResponse):
         super(JSONResponse, self).__init__(content, **kwargs)
 
 
+class YourPagination(pagination.PageNumberPagination):
+
+    def get_paginated_response(self, data):
+        return response.Response({
+            'links': {
+                'next': self.get_next_link(),
+                'previous': self.get_previous_link()
+            },
+            'count': self.page.paginator.count,
+            'total_pages': self.page.paginator.num_pages,
+            'results': data
+        })
+
+
 @csrf_exempt
 def image_list(request):
     if request.method == 'GET':
@@ -35,9 +49,19 @@ def image_list(request):
         return JSONResponse(images_serializer.data, status=status.HTTP_202_ACCEPTED)
 
 
-@csrf_exempt
-def explore(request, pk):
-    if request.method == 'GET':
+class ImageListView(generics.ListAPIView):
+    def get(self, request):
+        images = Image.objects.all().order_by('?')
+        pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
+        paginator = YourPagination()
+        page = paginator.paginate_queryset(images, request)
+        images_serializer = ImageSerializer(page, many=True)
+        return paginator.get_paginated_response(images_serializer.data)
+
+
+class ExploreView(generics.ListAPIView):
+    def get(self, request, pk):
+
         sign = Image.objects.get(pk=pk).signature
         query = JSONVectConverter.json_to_vect(sign)
 
@@ -49,14 +73,19 @@ def explore(request, pk):
                 query.T
             ).astype(float)
 
-        flat = sorted(value_dict, key=value_dict.__getitem__)[::-1]  # lista ordinata delle PK degli elementi da visualizzare
+        flat = sorted(value_dict, key=value_dict.__getitem__)[
+               ::-1]  # lista ordinata delle PK degli elementi da visualizzare
         qs_new = []
-        nToDisplay = 30
-        flat = flat[:nToDisplay]
+        # nToDisplay = 30
+        # flat = flat[:nToDisplay]
         for i in range(len(flat)):
             qs_new.append(Image.objects.get(id=flat[i]))
-        images_serializer = ImageSerializer(qs_new, many=True)
-        return JSONResponse(images_serializer.data, status=status.HTTP_202_ACCEPTED)
+
+        pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
+        paginator = YourPagination()
+        page = paginator.paginate_queryset(qs_new, request)
+        images_serializer = ImageSerializer(page, many=True)
+        return paginator.get_paginated_response(images_serializer.data)
 
 
 @csrf_exempt
@@ -67,18 +96,23 @@ def get_image(request, pk):
 
 
 @csrf_exempt
-def query(request):
+def query_up(request):
     if request.method == 'POST':
         myfile = request.FILES['myfile']
-        print("XXX" + settings.MEDIA_ROOT + "/temp")
+        #print("XXX" + settings.MEDIA_ROOT + "/temp")
         location = settings.MEDIA_ROOT + "/temp"
         fs = FileSystemStorage(location=location, base_url=settings.MEDIA_URL + "/cache")
         fs.save(myfile.name, myfile)
         filename_base = os.path.splitext(myfile.name)
         image_path = filename_base[0]
+        return HttpResponse(image_path, status=status.HTTP_202_ACCEPTED)
+
+
+class QueryGetView(generics.ListAPIView):
+    def get(self, request, img_name):
         start = time.time()
         print("start counting")
-        query_signature = extract_feat(settings.MEDIA_ROOT + "/temp/" + image_path + ".jpg")  # a NumPy-Array object
+        query_signature = extract_feat(settings.MEDIA_ROOT + "/temp/" + img_name + ".jpg")  # a NumPy-Array object
         # print(query_signature)
 
         value_dict = {}
@@ -97,14 +131,18 @@ def query(request):
         print(end - start)  # quanto impiega a svolgere il mega prodotto scalare
 
         qs_new = []
-        nToDisplay = 30
-        flat = flat[:nToDisplay]
+        # nToDisplay = 30
+        # flat = flat[:nToDisplay]
         for i in range(len(flat)):
             qs_new.append(Image.objects.get(id=flat[i]))
         end = time.time()
-        images_serializer = ImageSerializer(qs_new, many=True)
+        # images_serializer = ImageSerializer(qs_new, many=True)
         print(end - start)
-        return JSONResponse(images_serializer.data, status=status.HTTP_202_ACCEPTED)
+
+        paginator = YourPagination()
+        page = paginator.paginate_queryset(qs_new, request)
+        images_serializer = ImageSerializer(page, many=True)
+        return paginator.get_paginated_response(images_serializer.data)
 
 
 class ImageUploadView(views.APIView):

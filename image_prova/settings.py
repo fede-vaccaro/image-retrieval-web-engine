@@ -122,6 +122,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
+REST_FRAMEWORK = {
+ 'DEFAULT_PAGINATION_CLASS':
+ 'rest_framework.pagination.LimitOffsetPagination',
+ 'PAGE_SIZE': 4
+}
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 STATIC_URL = '/static/'
 
