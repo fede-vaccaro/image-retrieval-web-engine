@@ -7,7 +7,6 @@ urlpatterns = [
     url(r'^query_up/', views.query_up),
     # url(r'^image_list/', views.image_list),
     url(r'^image_list/', csrf_exempt(views.ImageListView.as_view())),
-    url(r'^image_list/avoid_caching/', csrf_exempt(views.ImageListView.as_view())),
     url(r'^get_image/(?P<pk>[-\w]+)/$', views.get_image),
     # url(r'^explore/(?P<pk>[0-9]+)/$', views.explore),
     url(r'^explore/(?P<pk>[0-9]+)/$', csrf_exempt(views.ExploreView.as_view())),

@@ -1,5 +1,27 @@
 var myApp = angular.module('myApp', ["ngRoute"]);
 
+myApp.controller('mainCtrl', function($scope){
+    $scope.selectedA = "selected";
+    $scope.selectedB = "";
+    $scope.selectedC = "";
+    $scope.selectedD = "";
+    $scope.info = "image-info";
+    
+    $scope.deselectAll = function(){
+        $scope.selectedA = "";
+        $scope.selectedB = "";
+        $scope.selectedD = "";
+    }
+    
+    $scope.clickC = function(){
+        if($scope.explore_var){
+            $scope.selectedC = "selected";
+        }else{
+            $scope.selectedC = "";
+        }
+        
+    }
+})
 
 myApp.config(function($routeProvider) {
     $routeProvider
@@ -167,6 +189,11 @@ myApp.controller('queryCtrl', ['$scope', 'fileUpload', '$http', function($scope,
 
 //Image List Controller
 myApp.controller('listCtrl', ['$scope', '$http', '$rootScope', '$window', function($scope, $http, $rootScope, $window){
+    
+    $scope.openInNewTab = function(link){
+        console.log("open in new tab");
+        $window.open(link, '_blank');
+    }
     
     $scope.reload = function(){
         $window.location.reload();

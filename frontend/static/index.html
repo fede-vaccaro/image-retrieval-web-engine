@@ -7,27 +7,36 @@
     <!-- Include our app -->
     <script src="js/app.js"></script>
 
+    <!-- Include CSS style -->
+    <link href="css/base.css" rel="stylesheet">
     
     </head>
 <body>
 
+<div ng-app = "myApp" ng-controller='mainCtrl'>
 <div id="header">
 <span class="logo">CN-Search</span>
+
+    
+<title>CN-Search</title>
+    
+
+
+<ul class="menu">
+<li ng-class="selectedA"><a href="#/!" ng-click="up = false; deselectAll(); selectedA = 'selected';">List</a></li>
+<li ng-class="selectedB"><a href="#!search" ng-click="up = false; deselectAll(); selectedB = 'selected';">Search</a></li>
+<li ng-class="selectedC"><a href="" ng-click="explore_var = !explore_var; clickC();">Explore</a></li>
+<li ng-class="selectedD"><a href="#" ng-click="up = !up; deselectAll(); selectedD = 'selected';">Upload</a></li>
+</ul>
+    
+<span ng-include="'upload.htm'" ng-show="up"></span>
+    
+<span class="user">A Deep Learning-based image engine.</span>
+    
 </div>
     
-<title>Deep Learning Image retriever!</title>
-    
-
-<div ng-app = "myApp">
-
-<a href="#/!" ng-click="up = false">List</a>
-<a href="#!search" ng-click="up = false">Search</a>
-<a href="#" ng-click="up = !up">Upload</a>
-<a href="" ng-click="explore_var = !explore_var; console.log(explore_var);">Explore</a> {{explore_var}}
-
-    
-<div ng-include="'upload.htm'" ng-show="up"></div>
-<div ng-view></div>   
+<div id="content"><div id="image-list">
+<div ng-view></div></div></div>      
     
     
 

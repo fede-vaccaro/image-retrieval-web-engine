@@ -1,10 +1,11 @@
-<form name="uploadForm" ng-controller = "queryCtrl">
+<br><form name="uploadForm" ng-controller = "queryCtrl">
     <input type="file" file-model="myFile" name="fileInput">
     <button ng-click="pages.current = 1; uploadFile();">Search!</button>
+    
     <div  ng-show="done" ng-repeat="d in imageList">
         
         
-    <h3>Image {{ d.title }}</h3>
+    <h3>{{ d.title }}</h3>
         <div ng-show="!explore_var">
         <a ng-href="{{ d.image }}">
         <img ng-src="{{ d.image }}" width="200"></a><br/></div>
