@@ -24,14 +24,17 @@
 
 <ul class="menu">
 <li ng-class="selectedA"><a href="#/!" ng-click="up = false; deselectAll(); selectedA = 'selected';">List</a></li>
-<li ng-class="selectedB"><a href="#!search" ng-click="up = false; deselectAll(); selectedB = 'selected';">Search</a></li>
+<li ng-class="selectedB"><a href="#" ng-click="up = false; deselectAll(); selectedB = 'selected';">Search</a></li>
 <li ng-class="selectedC"><a href="" ng-click="explore_var = !explore_var; clickC();">Explore</a></li>
 <li ng-class="selectedD"><a href="#" ng-click="up = !up; deselectAll(); selectedD = 'selected';">Upload</a></li>
 </ul>
+
+<span class="user">A Deep Learning-based image engine.</span>
     
 <span ng-include="'upload.htm'" ng-show="up"></span>
+<span ng-include="'search.htm'" ng-show="selectedB"></span>
     
-<span class="user">A Deep Learning-based image engine.</span>
+
     
 </div>
     

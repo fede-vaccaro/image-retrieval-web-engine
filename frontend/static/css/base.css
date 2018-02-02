@@ -1,24 +1,100 @@
 @import url(http://fonts.googleapis.com/css?family=Muli);
 
+.w3-bar{
+    text-align: center;
+    bottom: 2%;
+    position: fixed;
+    padding-left: 600px;
+    padding-right: 20px;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    overflow:hidden;
+}
+.w3-center{
+    text-align:center!important
+}.w3-padding-32{
+    padding-top:32px!important;
+    padding-bottom:32px!important;
+}
+.w3-bar-item{
+    padding:8px 16px;
+    float:left;
+    width:auto;
+    border:none;
+    display:block
+}.w3-button{
+    border: 1px solid #e2d8d0;
+    border-radius: 4px;
+    display:inline-block;
+    padding:12px 16px;
+    vertical-align:middle;
+    overflow:hidden;
+    text-decoration:none;
+    color:inherit;
+    background-color:inherit;
+    text-align:center;
+    cursor:pointer;
+    white-space:nowrap;
+    text-align: justify;
+}
+
+.w3-hover-black:hover{
+    border-radius: 4px;
+    color:#fff!important;
+    background-color:#1e0707!important
+}
+
+.w3-button-black{
+    border-radius: 4px;
+    border: 1px solid #e2d8d0;
+    display:inline-block;
+    padding:12px 16px;
+    vertical-align:middle;
+    overflow:hidden;
+    text-decoration:none;
+    color:#fff;
+    background-color:#1e0707;
+    text-align:center;
+    cursor:pointer;
+    white-space:nowrap;
+    text-align: justify;
+}
+
+.page-bar {
+    background-color: #662233;
+    text-align: center;
+    bottom: 2%;
+    position: fixed;
+    padding-left: 30%;
+    padding-right: 30%;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    margin-left: 100px;
+    overflow:hidden;
+}
+
 form {
     display: inline-flex;
 }
 
 
 input[type=text] {
+    padding: 8px 32px;
     background-color: #efefef;
     border-radius: 8px;
+    margin-left: 30px;
 }
 
 input[type=text]:focus {
     background-color: #fffdb5;
     border-radius: 8px;
+    margin-left: 30px;
 }
 
 input[type=file]{
     border-radius: 8px;
-    color: forestgreen;
-    margin-left: 15px;
+    color: #662233;
+    margin-left: 30px;
 }
 
 input[type=file]:focus {
@@ -27,18 +103,20 @@ input[type=file]:focus {
 }
 
 input[type=button]{
-    background-color: #b4ffc3;
-    border: none;
+    background-color: #af3d5a;
+    border-radius: 8px;
+    border: 2px solid #af3d5a;
     color: white;
     padding: 8px 16px;
     text-decoration: none;
     text-decoration-color:darkolivegreen;
     cursor: pointer;
-    margin-left: 15px;
+    margin-left: 30px;
 }
 
 input[type=button]:hover {
-    background-color: #4CAF50;
+    border: 2px solid #af3d5a;
+    background-color: #662233;
     color: white;
 }
 
@@ -80,12 +158,24 @@ ol {
 #header {
     padding:10px 100px;
     font-size:14px;
-    background:#12c064;
-    color:#fff;
-    border-bottom:4px solid #1cdf78;
+    background:#611629;
+    color:#EEEEEE;
+    border-bottom:4px solid #EC644B;
     overflow:auto;
+    position: fixed;
+    top: 0;
+    width: 100%;
 }
 
+/*
+#header {
+    padding:10px 100px;
+    font-size:14px;
+    color:#611629;
+    border-bottom:4px solid #a94d4d;/*#1cdf78;
+    overflow:auto;
+} 
+*/
 #header .logo {
     font-family: 'Muli', sans-serif;
     float:left;
@@ -95,10 +185,13 @@ ol {
 }
 
 #header ul.menu {
+    background-color: #611629;
     list-style:none;
+    font-family: 'Muli', sans-serif;
     float:left;
     margin:0;
     padding:0;
+    cursor:pointer;
 }
 #header ul.menu li {
     float:left;
@@ -106,26 +199,32 @@ ol {
 }
 
 #header ul.menu li.selected a, #header ul.menu li.selected a:hover {
-    color:#1b6d32;
-    font-weight:bold;
+    background: #f7f0cc;
+    color:#2a0f0f;
+    font-weight:bolder;
+    padding: 5px;
+    padding-bottom: 7px;
+    border-radius: 2px;
 }
 
 #header a {
-    color:#f3f7cc;
+    color:#e5c2b5;
 }
 #header a:hover {
     color:#fff;
 }
 
 #header .user {
-    color:#1c7034;
+    font-family: 'Muli', sans-serif;
+    color:#f3f7cc;
     float:right;
     padding-top:4px;
     font-style: italic;
-    font-weight: 600;
+    margin-right: 200px;
 }
 
 #content {
+    margin-top: 50px;
     padding:30px 100px;
 }
 
@@ -248,7 +347,7 @@ ul.messages li a.close {
 .image-info div {
     font-family: 'sans-serif';
     text-align: center;
-    padding-left: 20px;
+    padding-left: 0px;
     padding-top: 5px;
     padding-bottom: 5px;
     padding-right: 0px;
@@ -267,13 +366,14 @@ a.like, a.follow { float:right; margin-top:-8px; }
 #image-list .image {
     float:left;
     width:220px;
-    height:280px;
+    height:260px;
     margin:0 10px 30px 10px;
-    border-top:8px solid #12c064;
     background:#eee;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
 }
 #image-list img { width:220px; height:220px; object-fit: cover; }
-#image-list .info {font-family: 'Verdana'; padding:5px; overflow: hidden; text-align: justify}
+#image-list .info {font-family: 'Muli', sans-serif; padding:5px; overflow: hidden; text-align: justify}
 #image-list .info a { color:#333; }
 .image-likes div {
     float:left;

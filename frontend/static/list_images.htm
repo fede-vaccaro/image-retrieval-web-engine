@@ -1,20 +1,27 @@
 <div ng-controller = "listCtrl" ng-hide="Search">
     <div ng-repeat="image in imageList">
         <div class="image">
-        <div class='info'> {{ image.title }}</div>
+        
         <div ng-show="!explore_var">
         <a ng-href="#" ng-click="openInNewTab(image.image);">
-        <img ng-src="{{ image.image }}"></a><br/></div>
+        <img ng-src="{{ image.image }}"></a><br/><div class='info'> {{ image.title }}</div></div>
         
+            
         <div ng-show="explore_var">      
-        <img ng-click="pages.current = 1; explore(image.pk)" ng-src="{{ image.image }}" width="200"><br/></div></div>   
+        <img ng-click="pages.current = 1; explore(image.pk)" ng-src="{{ image.image }}" width="200"><br/><div class='info'> {{ image.title }}</div></div></div>   
 </div>
-    <div ng-show="exploring"><br><a ng-click="previousPage()" href="">Prev</a><span> </span><a href="" ng-click="nextPage()">Next</a>
-    <p>
-    <br>Current : {{ pages.current }}
-    <br>Next : {{ pages.next }}
-    <br>Last : {{ pages.last }}
-    <br>Previous : {{ pages.previous }}</p>
+    
+    <div class="w3-center w3-padding-32" ng-show="exploring">
+        <div class="w3-bar">
+        <a class="w3-bar-item w3-button w3-hover-black" href="" ng-click="changePage(1)">First Page</a>
+        <a class="w3-bar-item w3-button w3-hover-black" href="" ng-click="changePage(pages.current - 1)" >«</a>
+        <span ng-repeat="p in pages.allPages">
+            <a ng-class="isCurrent(p)" ng-show="isVisible(p)" href="" ng-click="changePage( p )">{{ p }}</a>
+        </span>
+        <a class="w3-bar-item w3-button w3-hover-black" href="" ng-click="changePage(pages.current + 1 )">»</a>
+        <a class="w3-bar-item w3-button w3-hover-black" href="" ng-click="changePage(pages.allPages.length)"> Last Page</a>
+        </div>
     </div>
-    <!--<br><div ng-hide="false"><button ng-click="reload()">More images!</button></div> -->
+    
+    
 </div>

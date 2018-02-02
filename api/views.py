@@ -95,11 +95,27 @@ def get_image(request, pk):
         return JSONResponse(ImageSerializer(image).data, status=status.HTTP_202_ACCEPTED)
 
 
+class OverAllowedDimension(Exception):
+
+    def __init__(self, maxAllowedDim, thisDim):
+        self.maxAllowedDim = maxAllowedDim
+        self.thisDim = thisDim
+        self.message = "Sent file is bigger than allowed: " + str(thisDim) + " > " + str(maxAllowedDim) + " !"
+        print(self.message)
+
+
 @csrf_exempt
 def query_up(request):
     if request.method == 'POST':
         try:
             myfile = request.FILES['myfile']
+            print(myfile._size)
+            allowed_dimension = 3145728
+            if (myfile._size > allowed_dimension):
+                raise OverAllowedDimension(allowed_dimension, myfile._size)
+        except OverAllowedDimension as err:
+            print(err.message)
+            return HttpResponse(err.message, status=status.HTTP_400_BAD_REQUEST)
         except:
             return HttpResponse("something went wrong.", status=status.HTTP_400_BAD_REQUEST)
         location = settings.MEDIA_ROOT + "/temp"

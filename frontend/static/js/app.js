@@ -64,7 +64,10 @@ myApp.service('fileUpload', ['$http', function ($http) {
             headers: {'Content-Type': undefined}
         }).then(function(response) {
             $scope.callBack(response);
-    });
+    }, function(response){
+            console.log(response.data);
+            alert(response.data);
+        })
     }
 }]);
 
@@ -91,7 +94,7 @@ myApp.controller('myCtrl', ['$scope', 'fileUpload', '$rootScope', function($scop
     
 }]);
 
-myApp.controller('queryCtrl', ['$scope', 'fileUpload', '$http', function($scope, fileUpload, $http){
+myApp.controller('queryCtrl', ['$scope', 'fileUpload', '$rootScope', function($scope, fileUpload, $rootScope){
     
     $scope.uploadFile = function(){
         var file = $scope.myFile;
@@ -102,86 +105,13 @@ myApp.controller('queryCtrl', ['$scope', 'fileUpload', '$http', function($scope,
         fileUpload.uploadFileToUrl(obj, uploadUrl, $scope);
     };
     
-    $scope.callBack = function(response){
-        console.log("getting resources");
-        $scope.done = response.data;
-        console.log($scope.done);
-        $http.get("/api/query_get/" + $scope.done + "/" + "?page=" + $scope.pages.current, {cache: true}).then(function(response){
-        $scope.imageList = response.data.results;
-        console.log($scope.imageList);
-        $scope.searching = true;
-        $scope.pages.key = $scope.done;
-            
-        if(response.data.total_pages > 1){
-            $scope.pages.last = response.data.total_pages;
-            $scope.pages.next = $scope.pages.current + 1;
-        }
-        
-            $scope.pages.previous = $scope.pages.current - 1;    
-            
-        }, function(response){
-    });
+    $scope.callBack = function(response){            
+        var imgName = response.data;
+        console.log("calling back - search controller");
+        console.log(imgName)
+        $rootScope.$emit("Explore", imgName);
     }
-    
-        $scope.explore = function(key){
-        console.log("exploring ");
-        console.log(key);
-        $http.get("/api/explore/" + key + "/" + "?page=" + $scope.pages.current, {cache: true}).then(function(response){
-        $scope.imageList = response.data.results;
-        console.log($scope.imageList);
-        $scope.exploring = true;
-        $scope.pages.key = key;
-            
-        if(response.data.total_pages > 1){
-            $scope.pages.last = response.data.total_pages;
-            $scope.pages.next = $scope.pages.current + 1;
-        }else{
-            $scope.pages.last = null;
-            $scope.pages.next = null;
-        }
-        
-            $scope.pages.previous = $scope.pages.current - 1; 
-            
-            
-            
-            
-    }, function(response){
-    });
-    }
-    
-    $scope.pages = {  
-        current:1,
-        next:null,
-        last:null,
-        previous:null,
-        key:null
-    };
-    
-    $scope.nextPage = function(){
-        if($scope.pages.current < $scope.pages.last){
-            $scope.pages.current += 1;
-            $scope.pages.previous += 1;
-            if(typeof $scope.pages.key == "string"){
-                $scope.callBack({data:$scope.pages.key})
-            }else{
-                $scope.explore($scope.pages.key)
-            }
-        }
-    }
-    
-    $scope.previousPage = function(){
-        if($scope.pages.current > 1){
-            $scope.pages.current -= 1;
-            $scope.pages.previous -= 1;
-             if(typeof $scope.pages.key == "string"){
-                $scope.callBack({data:$scope.pages.key})
-            }else{
-                $scope.explore($scope.pages.key)
-            }
-        }
-    }
-    
-    
+  
 }]);
 
 
@@ -201,7 +131,7 @@ myApp.controller('listCtrl', ['$scope', '$http', '$rootScope', '$window', functi
     }
     
     $http.get("/api/image_list/", {cache: true}).then(function(response){
-        console.log("image_list")
+        //console.log("image_list")
         $scope.imageList = response.data.results;
         
     }, function(response){
@@ -217,57 +147,66 @@ myApp.controller('listCtrl', ['$scope', '$http', '$rootScope', '$window', functi
     $scope.explore = function(key){
         console.log("exploring ");
         console.log(key);
-        $http.get("/api/explore/" + key + "/" + "?page=" + $scope.pages.current, {cache: true}).then(function(response){
+        var address;
+        if(typeof key == "string"){
+                address = "/api/query_get/" + key + "/" + "?page=" + $scope.pages.current;
+         }else{
+                address = "/api/explore/" + key + "/" + "?page=" + $scope.pages.current;
+         }
+        $http.get(address, {cache: true}).then(function(response){
+        //response handling begin    
         $scope.imageList = response.data.results;
-        console.log($scope.imageList);
+        //console.log($scope.imageList);
         $scope.exploring = true;
+        if(key != $scope.pages.key){
+        $scope.pages.current = 1;
         $scope.pages.key = key;
-            
-        if(response.data.total_pages > 1){
-            $scope.pages.last = response.data.total_pages;
-            $scope.pages.next = $scope.pages.current + 1;
+        $scope.pages.allPages = [];
+        for(i = 0; i < response.data.total_pages; i++)
+            $scope.pages.allPages.push(i + 1);
         }
-        
-            $scope.pages.previous = $scope.pages.current - 1; 
-        
-            
-            
-            
+        //response handling end  
     }, function(response){
     });
     }
     
     $scope.pages = {  
         current:1,
-        next:null,
-        last:null,
-        previous:null,
-        key:null
+        key:null,
+        allPages:[]
     };
     
-    $scope.nextPage = function(){
-        if($scope.pages.current < $scope.pages.last){
-            $scope.pages.current += 1;
-            $scope.pages.previous += 1;
-            $scope.explore($scope.pages.key)
+    $scope.changePage= function(p){
+        if(p <= $scope.pages.allPages.length && p > 0 ){
+            console.log(p + "changing page");
+            console.log( $scope.pages.allPages );
+            $scope.pages.current = p;
+            $scope.explore($scope.pages.key);
         }
     }
     
-    $scope.previousPage = function(){
-        if($scope.pages.current > 1){
-            $scope.pages.current -= 1;
-            $scope.pages.previous -= 1;
-            $scope.explore($scope.pages.key)
+    $scope.isCurrent = function(numPage){
+        if(numPage == $scope.pages.current){
+            return "w3-bar-item w3-button-black";
+        }else{
+            return "w3-bar-item w3-button w3-hover-black";
         }
     }
     
-    
-    
+    $scope.isVisible = function(numPage){
+        var numPageToDisplay = 9;
+        if( Math.floor( (numPage - 1)/numPageToDisplay ) ==  Math.floor( ($scope.pages.current - 1)/numPageToDisplay ) ){
+            return true;  
+           }
+        return false;
+    }
 
 }])
+/*
+0 1 2 3 4 5 6 7| 8 9 10 11 12 13 14 15| 16
 
-
-
+      0        |            1         |
+*/
 
 
 
