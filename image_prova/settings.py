@@ -125,7 +125,7 @@ USE_TZ = True
 REST_FRAMEWORK = {
  'DEFAULT_PAGINATION_CLASS':
  'rest_framework.pagination.LimitOffsetPagination',
- 'PAGE_SIZE': 2
+ 'PAGE_SIZE': 15
 }
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))

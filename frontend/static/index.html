@@ -31,14 +31,13 @@
 
 <span class="user">A Deep Learning-based image engine.</span>
     
-<span ng-include="'upload.htm'" ng-show="up"></span>
-<span ng-include="'search.htm'" ng-show="selectedB"></span>
-    
-
     
 </div>
     
-<div id="content"><div id="image-list">
+<div id="content">
+<span ng-include="'upload.htm'" ng-show="up"></span>
+<span ng-include="'search.htm'" ng-show="selectedB"></span>    
+<div id="image-list">
 <div ng-view></div></div></div>      
     
     
