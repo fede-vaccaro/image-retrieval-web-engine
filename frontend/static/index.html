@@ -4,6 +4,7 @@
     <!-- Include Angular and several angular libraries -->
     <script src="modules/angular.min.js"></script>
     <script src="modules/angular-route.js"></script>
+    <script src="modules/angular-animate.js"></script>
     <!-- Include our app -->
     <script src="js/app.js"></script>
 
@@ -23,10 +24,19 @@
 
 
 <ul class="menu">
-<li ng-class="selectedA"><a href="#/!" ng-click="up = false; deselectAll(); selectedA = 'selected';">List</a></li>
-<li ng-class="selectedB"><a href="#" ng-click="up = false; deselectAll(); selectedB = 'selected';">Search</a></li>
-<li ng-class="selectedC"><a href="" ng-click="explore_var = !explore_var; clickC();">Explore</a></li>
-<li ng-class="selectedD"><a href="#" ng-click="up = !up; deselectAll(); selectedD = 'selected';">Upload</a></li>
+<li ng-class=""><a href="" ng-click="moreImages()"><span class="tooltip">Pictures
+  <span class="tooltiptext">Click to show more random pictures.</span>
+</span></a></li>
+<li ng-class="selectedB"><a href="" ng-click="up = false; b_up = !b_up; deselectAll(); (b_up ? selectedB = 'selected' : selectedB = '');"><span class="tooltip">Search
+  <span class="tooltiptext">Load a pictures from your device, then retrieve the similar ones.</span>
+</span></a></li>
+<li ng-class="selectedD"><a href="" ng-click="b_up = false; up = !up; deselectAll(); (up ? selectedD = 'selected' : selectedD = '');"><span class="tooltip">Share
+  <span class="tooltiptext">Share with others your picture.</span>
+</span></a></li>
+<li ng-class="selectedC"><a href="" ng-click="explore_var = !explore_var; clickExplore();"><span class="tooltip">{{ exploreMenu }}
+  <span class="tooltiptext">This is an On/Off mode: once activated, click on a picture to search and explore what is similar.</span>
+</span></a></li>
+
 </ul>
 
 <span class="user">A Deep Learning-based image engine.</span>
@@ -35,8 +45,8 @@
 </div>
     
 <div id="content">
-<span ng-include="'upload.htm'" ng-show="up"></span>
-<span ng-include="'search.htm'" ng-show="selectedB"></span>    
+<span ng-include="'upload.htm'" ng-hide="!up"></span>
+<span ng-include="'search.htm'" ng-hide="!selectedB"></span><br>
 <div id="image-list">
 <div ng-view></div></div></div>      
     

@@ -169,8 +169,17 @@ class ImageUploadView(views.APIView):
     def post(self, request):
         title_ = request.data['title']
         quote_ = request.data['quote']
-        img = request.data['image']
-        if (img == "undefined"):
+
+        try:
+            img = request.data['image']
+            print(img)
+            allowed_dimension = 3145728
+            if (img._size > allowed_dimension):
+                raise OverAllowedDimension(allowed_dimension, img._size)
+        except OverAllowedDimension as err:
+            print(err.message)
+            return HttpResponse(err.message, status=status.HTTP_400_BAD_REQUEST)
+        except:
             return HttpResponse("something went wrong.", status=status.HTTP_400_BAD_REQUEST)
         new_image = Image.objects.create(title=title_, quote=quote_, image=ImageFile(img))
         new_image.signature = JSONVectConverter.vect_to_json(

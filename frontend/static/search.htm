@@ -1,6 +1,6 @@
 <form name="uploadForm" ng-controller = "queryCtrl">
-    <input type="file" file-model="myFile" name="fileInput">
-    <input value="Search!" type="button" ng-click="pages.current = 1; uploadFile();">
+    <input accept="image/jpeg" type="file" file-model="myFile" name="fileInput">
+    <input value="Search!" type="button" ng-click="pages.current = 1; uploadFile();"></form>
     
     <!--
 <div ng-show="searching"><br><a ng-click="previousPage()" href="">Prev</a><span> </span><a href="" ng-click="nextPage()">Next</a>

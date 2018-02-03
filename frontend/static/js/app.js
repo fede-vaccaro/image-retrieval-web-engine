@@ -1,11 +1,22 @@
-var myApp = angular.module('myApp', ["ngRoute"]);
+var myApp = angular.module('myApp', ["ngRoute", "ngAnimate"]);
 
-myApp.controller('mainCtrl', function($scope){
-    $scope.selectedA = "selected";
+myApp.controller('mainCtrl', ['$scope', '$rootScope', function($scope, $rootScope){
+    $scope.selectedA = "";
     $scope.selectedB = "";
     $scope.selectedC = "";
     $scope.selectedD = "";
     $scope.info = "image-info";
+    $scope.exploreMenu = "Explore";
+    
+    $scope.clickExplore = function(){
+        if($scope.explore_var){
+            $scope.selectedC = "selected";
+            $scope.exploreMenu = "Explore!";
+        }else{
+            $scope.selectedC = "";
+            $scope.exploreMenu = "Explore";
+        }
+    }
     
     $scope.deselectAll = function(){
         $scope.selectedA = "";
@@ -13,15 +24,13 @@ myApp.controller('mainCtrl', function($scope){
         $scope.selectedD = "";
     }
     
-    $scope.clickC = function(){
-        if($scope.explore_var){
-            $scope.selectedC = "selected";
-        }else{
-            $scope.selectedC = "";
-        }
+    $scope.moreImages = function(){
+        console.log("emitting more images");
+        $rootScope.$emit("moreImages", {});
         
     }
-})
+
+}])
 
 myApp.config(function($routeProvider) {
     $routeProvider
@@ -133,8 +142,32 @@ myApp.controller('listCtrl', ['$scope', '$http', '$rootScope', '$window', functi
     $http.get("/api/image_list/", {cache: true}).then(function(response){
         //console.log("image_list")
         $scope.imageList = response.data.results;
-        
+        console.log($scope.imageList);
     }, function(response){
+    })
+    
+    $scope.moreImages = function(){
+        $scope.exploring = false;
+        $http.get("/api/image_list/").then(function(response){
+        console.log("in more images function")
+        /*for(var i = 0; i < response.data.results.length; i++){
+            console.log(response.data.results[i]);
+            $scope.imageList.unshift(response.data.results[i]);
+        }*/
+        $scope.imageList = response.data.results.concat($scope.imageList);
+        if($scope.imageList.length > 60){
+            $scope.imageList.splice(60);
+        }
+            
+        }, function(response){
+    })
+        
+    }
+    
+    $rootScope.$on("moreImages", function(event, data){
+        console.log("i'm on air");
+        console.log("charging more images");
+        $scope.moreImages();
     })
     
     $rootScope.$on("Explore", function(event, data){
@@ -148,12 +181,17 @@ myApp.controller('listCtrl', ['$scope', '$http', '$rootScope', '$window', functi
         console.log("exploring ");
         console.log(key);
         var address;
+        var cache;
+        if(key != $scope.pages.key){
+            $scope.pages.current = 1;
+        }
         if(typeof key == "string"){
                 address = "/api/query_get/" + key + "/" + "?page=" + $scope.pages.current;
          }else{
                 address = "/api/explore/" + key + "/" + "?page=" + $scope.pages.current;
+                
          }
-        $http.get(address, {cache: true}).then(function(response){
+        $http.get(address, {cache: false}).then(function(response){
         //response handling begin    
         $scope.imageList = response.data.results;
         //console.log($scope.imageList);
@@ -199,6 +237,14 @@ myApp.controller('listCtrl', ['$scope', '$http', '$rootScope', '$window', functi
             return true;  
            }
         return false;
+    }
+    
+    $scope.showOverlay = false;
+    $scope.imageToShow;
+    
+    $scope.showImage = function(imageToShow){
+        $scope.showOverlay = true;
+        $scope.imageToShow = imageToShow;
     }
 
 }])

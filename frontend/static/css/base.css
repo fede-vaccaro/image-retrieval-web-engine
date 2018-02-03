@@ -1,27 +1,139 @@
 @import url(http://fonts.googleapis.com/css?family=Muli);
 
+
+
+#overlay {
+    position: fixed;
+    display:block;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.75);
+    z-index: 2;
+    animation: fadeInFromNone 0.1s ease-out;
+}
+/*
+#overlay .content{
+  position:absolute;
+  background-color: #fefefe;
+  margin-top: 320px; 
+  border: 8px solid #210606;
+  border-radius: 8px; 
+}
+*/
+#overlay img{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 100px;
+    max-height: 500px;
+    border: 8px solid #210606;
+    border-radius: 8px; 
+}
+
+
+#overlay .close {
+  color: white;
+  position: absolute;
+  top: 10px;
+  right: 25px;
+  font-size: 35px;
+  font-weight: bold;
+}
+
+#overlay .close:hover,
+#overlay .close:focus {
+  color: #999;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+@keyframes fadeInFromNone {
+    0% {
+        display: none;
+        opacity: 0;
+    }
+
+    1% {
+        display: block;
+        opacity: 0;
+    }
+
+    100% {
+        display: block;
+        opacity: 1;
+    }
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 200px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    padding-right: 2px;
+    padding-left: 2px;
+    
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 3;
+    top: 100%;
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.35s;
+}
+
+.tooltip:hover .tooltiptext {
+    opacity: 1;
+    visibility: visible;
+}
+
+.tooltip .tooltiptext::after {
+    content: " ";
+    position: absolute;
+    bottom: 100%;  /* At the top of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent black transparent;
+}
+
 .w3-bar{
+    display: block;
     text-align: center;
     bottom: 2%;
     position: fixed;
-    padding-left: 600px;
-    padding-right: 20px;
+    padding-left: 24%;
     padding-bottom: 10px;
     padding-top: 10px;
     overflow:hidden;
 }
 .w3-center{
-    text-align:center!important
+    text-align:center;
 }.w3-padding-32{
     padding-top:32px!important;
     padding-bottom:32px!important;
+    
 }
 .w3-bar-item{
     padding:8px 16px;
     float:left;
     width:auto;
     border:none;
-    display:block
+    display:block;
+    
 }.w3-button{
     border: 1px solid #e2d8d0;
     border-radius: 4px;
@@ -31,18 +143,16 @@
     overflow:hidden;
     text-decoration:none;
     color:inherit;
-    background-color:inherit;
+    background-color:#EEEEEE;
     text-align:center;
     cursor:pointer;
     white-space:nowrap;
     text-align: justify;
+    transition: background-color 0.15s;
+    
 }
 
-.w3-hover-black:hover{
-    border-radius: 4px;
-    color:#fff!important;
-    background-color:#1e0707!important
-}
+
 
 .w3-button-black{
     border-radius: 4px;
@@ -60,23 +170,22 @@
     text-align: justify;
 }
 
+.w3-hover-black:hover{
+    border-radius: 4px;
+    color:#EEEEEE;!important;
+    background-color:#1e0707!important
+}
+
 .page-bar {
     background-color: #662233;
     text-align: center;
     bottom: 2%;
     position: fixed;
-    padding-left: 30%;
-    padding-right: 30%;
-    padding-bottom: 10px;
-    padding-top: 10px;
-    margin-left: 100px;
+
     overflow:hidden;
 }
 
-form {
-    display: inline-flex;
-    padding-bottom: 15px;
-}
+
 
 
 input[type=text] {
@@ -84,6 +193,9 @@ input[type=text] {
     background-color: #efefef;
     border: 1px solid #662233;
     border-radius: 8px;
+    margin-left: 30px;
+    transition: background-color 0.5s;
+
 }
 
 input[type=text]:focus {
@@ -96,6 +208,7 @@ input[type=file]{
     border-radius: 8px;
     color: #662233;
     margin-left: 30px;
+    transition: color 1s;
 }
 
 input[type=file]:focus {
@@ -113,6 +226,7 @@ input[type=button]{
     text-decoration-color:darkolivegreen;
     cursor: pointer;
     margin-left: 30px;
+    transition: background-color 0.5s;
 }
 
 input[type=button]:hover {
@@ -162,7 +276,7 @@ ol {
     background:#611629;
     color:#EEEEEE;
     border-bottom:4px solid #EC644B;
-    overflow:auto;
+    overflow:visible;
     position: fixed;
     top: 0;
     width: 100%;
@@ -206,10 +320,17 @@ ol {
     padding: 5px;
     padding-bottom: 7px;
     border-radius: 2px;
+    padding-left: 4px;
+    padding-right: 4px;
 }
 
 #header a {
+    background: #611629;
     color:#e5c2b5;
+    padding-bottom: 7px;
+    padding-top: 5px;
+    padding-left: 4px;
+    padding-right: 4px;
 }
 #header a:hover {
     color:#fff;
@@ -225,19 +346,29 @@ ol {
 }
 
 #content {
-    margin-top: 50px;
-    padding:30px 100px;
+    z-index: auto;
+    margin-top: 30px;
+    padding:20px 3.5%;
+    margin-left: 5%;
+    margin-right: 5%;
 }
 
 /* forms */
 form {
-    overflow:auto;
+    overflow: hidden;
+    display: inline-flex;
+    margin-top: 5px;
+    padding-bottom: 5px;
+    padding-top: 15px;
+    padding-right: 30px;
+    border: 1px solid #662233;
+    border-radius: 8px;
+    margin-bottom: 9px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    transition: all linear 0.5s;
+    
 }
 
-form p {
-    width:100%;
-    overflow:auto;
-}
 
 label {
     float:left;
@@ -245,7 +376,7 @@ label {
     color:#333;
     margin-bottom:4px;
 }
-input, textarea {
+input {
     clear:both;
     float:left;
     margin:0 0 10px;
@@ -351,7 +482,6 @@ ul.messages li a.close {
     padding-left: 0px;
     padding-top: 5px;
     padding-bottom: 5px;
-    padding-right: 0px;
     overflow:auto;
 }
 .count {
@@ -365,15 +495,16 @@ a.like, a.follow { float:right; margin-top:-8px; }
 
 #image-list { overflow:auto; }
 #image-list .image {
+    
     float:left;
     width:220px;
     height:260px;
-    margin:0 10px 30px 10px;
+    margin:0 8px 20px 8px;
     background:#eee;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 
 }
-#image-list img { width:220px; height:220px; object-fit: cover; }
+#image-list .myImg { width:220px; height:220px; object-fit: cover; }
 #image-list .info {font-family: 'Muli', sans-serif; padding:5px; overflow: hidden; text-align: justify}
 #image-list .info a { color:#333; }
 .image-likes div {

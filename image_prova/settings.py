@@ -25,7 +25,9 @@ SECRET_KEY = '$cb#6qs3=xi3f84_%gfkkp@f92i)k#$$fynpf+=3@09kpw)f*!'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "192.168.0.2", "127.0.0.1"
+]
 
 
 # Application definition
@@ -125,7 +127,7 @@ USE_TZ = True
 REST_FRAMEWORK = {
  'DEFAULT_PAGINATION_CLASS':
  'rest_framework.pagination.LimitOffsetPagination',
- 'PAGE_SIZE': 15
+ 'PAGE_SIZE': 30
 }
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -136,7 +138,7 @@ STATICFILES_DIRS = (
 )
 
 MEDIA_ROOT = (
-BASE_DIR
+    BASE_DIR
 )
 
 
