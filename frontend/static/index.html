@@ -27,7 +27,7 @@
 <li ng-class=""><a href="" ng-click="moreImages()"><span class="tooltip">Pictures
   <span class="tooltiptext">Click to show more random pictures.</span>
 </span></a></li>
-<li ng-class="selectedB"><a href="" ng-click="up = false; b_up = !b_up; deselectAll(); (b_up ? selectedB = 'selected' : selectedB = '');"><span class="tooltip">Search
+<li ng-class="selectedB" ng-controller="queryCtrl"><a href="" ng-click="clickUpload()"><span class="tooltip">Search
   <span class="tooltiptext">Load a pictures from your device, then retrieve the similar ones.</span>
 </span></a></li>
 <li ng-class="selectedD"><a href="" ng-click="b_up = false; up = !up; deselectAll(); (up ? selectedD = 'selected' : selectedD = '');"><span class="tooltip">Share

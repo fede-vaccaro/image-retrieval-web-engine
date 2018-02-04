@@ -87,16 +87,11 @@
     /* Position the tooltip */
     position: absolute;
     z-index: 3;
-    top: 100%;
+    top: 140%;
     left: 50%;
-    margin-left: -60px;
+    margin-left: -100px;
     opacity: 0;
     transition: opacity 0.35s;
-}
-
-.tooltip:hover .tooltiptext {
-    opacity: 1;
-    visibility: visible;
 }
 
 .tooltip .tooltiptext::after {
@@ -109,6 +104,13 @@
     border-style: solid;
     border-color: transparent transparent black transparent;
 }
+
+.tooltip:hover .tooltiptext {
+    opacity: 1;
+    visibility: visible;
+}
+
+
 
 .w3-bar{
     display: block;
@@ -205,6 +207,7 @@ input[type=text]:focus {
 }
 
 input[type=file]{
+    display: none;
     border-radius: 8px;
     color: #662233;
     margin-left: 30px;
@@ -233,6 +236,12 @@ input[type=button]:hover {
     border: 2px solid #af3d5a;
     background-color: #662233;
     color: white;
+}
+
+input[type=button]:disabled{
+  border: 2px solid #999999;
+  background-color: #cccccc;
+  color: #666666;
 }
 
 body {

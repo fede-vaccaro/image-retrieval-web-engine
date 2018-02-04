@@ -82,14 +82,34 @@ myApp.service('fileUpload', ['$http', function ($http) {
 
 myApp.controller('myCtrl', ['$scope', 'fileUpload', '$rootScope', function($scope, fileUpload, $rootScope){
     
+    $scope.count = 0;
+    
+    $scope.$watch('myFile', function() {
+                    if($scope.count > 0){
+                        console.log("uploading");
+                        console.log($scope.count);
+                        $scope.uploadFile();
+                    }
+        
+                    $scope.count++;
+                    
+                });
+    
+    $scope.clickUpload = function(){
+          document.getElementById('myInput').click();
+    };
+    
     $scope.uploadFile = function(){
         var file = $scope.myFile;
-        var title = $scope.myTitle;
-        var obj = {image:file, title:title};
-        console.log('file is ' );
-        console.dir(file);
-        var uploadUrl = "/api/image_upload/";
-        fileUpload.uploadFileToUrl(obj, uploadUrl, $scope);
+        if(file != undefined){
+            var title = $scope.myTitle;
+            var obj = {image:file, title:title};
+            console.log('file is ' );
+            console.dir(file);
+            var uploadUrl = "/api/image_upload/";
+        
+            fileUpload.uploadFileToUrl(obj, uploadUrl, $scope);
+       }
     };
     
     
@@ -99,19 +119,39 @@ myApp.controller('myCtrl', ['$scope', 'fileUpload', '$rootScope', function($scop
             console.log("calling back");
             console.log($scope.done)
             $rootScope.$emit("Explore", $scope.done.pk);
+            $scope.myTitle = "";
     }
     
 }]);
 
 myApp.controller('queryCtrl', ['$scope', 'fileUpload', '$rootScope', function($scope, fileUpload, $rootScope){
     
+    $scope.count = 0;
+    
+    $scope.clickUpload = function(){
+          document.getElementById('mySearch').click();
+    };
+    
+    $scope.$watch('myFile', function() {
+                    if($scope.count > 0){
+                        console.log("uploading");
+                        console.log($scope.count);
+                        $scope.uploadFile();
+                    }
+        
+                    $scope.count++;
+                    
+                });
+    
     $scope.uploadFile = function(){
         var file = $scope.myFile;
-        var obj = {myfile:file};
-        console.log('file is ' );
-        console.dir(file);
-        var uploadUrl = "/api/query_up/";
-        fileUpload.uploadFileToUrl(obj, uploadUrl, $scope);
+        if(file != undefined){
+            var obj = {myfile:file};
+            console.log('file is ' );
+            console.dir(file);
+            var uploadUrl = "/api/query_up/";
+            fileUpload.uploadFileToUrl(obj, uploadUrl, $scope);
+        }    
     };
     
     $scope.callBack = function(response){            
