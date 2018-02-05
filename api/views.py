@@ -12,12 +12,55 @@ from images.extract_cnn_vgg16_keras import extract_feat
 from django.core.files.images import ImageFile
 from django.shortcuts import get_object_or_404
 from django.core.files.storage import FileSystemStorage
-import os, time
+from django.core.cache import cache
+import os, time, math
 import numpy as np
 
+def query_over_db(query_signature, page):
+    t0 = time.time()
 
-# from images.npjson import JSONVectConverter
-# from images.extract_cnn_vgg16_keras import extract_feat
+    descriptor_matrix = cache.get('descriptor_matrix')
+    id_vector = cache.get('id_vector')
+
+    if not descriptor_matrix:
+        id_vector = []
+        descriptor_matrix = []
+        for image in Image.objects.all():
+            s = image.signature
+            descriptor = JSONVectConverter.json_to_vect(s)
+            descriptor_matrix.append(descriptor)
+            id_vector.append(image.id)
+
+        cache.set('id_vector', id_vector)
+        cache.set('descriptor_matrix', descriptor_matrix)
+
+    t1 = time.time()
+    print("time to pull out the descriptors : " + str(t1 - t0))
+
+    result = np.dot(descriptor_matrix, query_signature)
+    value_dict = {}
+
+    for i in range(len(id_vector)):
+        value_dict[id_vector[i]] = result[i]
+
+    flat = sorted(value_dict, key=value_dict.__getitem__)[
+           ::-1]  # lista ordinata delle PK degli elementi da visualizzare
+
+    t2 = time.time()
+
+    flat = flat[(page-1)*30:page*30]
+
+    print("time to make the dot product and order the result: " + str(t2 - t1))
+
+    qs_new = []
+
+    for i in range(len(flat)):
+        qs_new.append(Image.objects.get(id=flat[i]))
+
+    t3 = time.time()
+    print("time to get the results from the DB : " + str(t3 - t2))
+    print("total time : " + str(t3 - t0))
+    return qs_new
 
 
 class JSONResponse(HttpResponse):
@@ -61,31 +104,24 @@ class ImageListView(generics.ListAPIView):
 
 class ExploreView(generics.ListAPIView):
     def get(self, request, pk):
+        print()
+        print("start counting")
+        t1 = time.time()
 
         sign = Image.objects.get(pk=pk).signature
-        query = JSONVectConverter.json_to_vect(sign)
+        query_signature = JSONVectConverter.json_to_vect(sign)
+        qs_new = query_over_db(query_signature, int(request.GET['page']))
 
-        value_dict = {}
-        for image in Image.objects.all():
-            S = image.signature
-            value_dict[image.id] = np.dot(
-                JSONVectConverter.json_to_vect(S),
-                query.T
-            ).astype(float)
+        t2 = time.time()
 
-        flat = sorted(value_dict, key=value_dict.__getitem__)[
-               ::-1]  # lista ordinata delle PK degli elementi da visualizzare
-        qs_new = []
-        # nToDisplay = 30
-        # flat = flat[:nToDisplay]
-        for i in range(len(flat)):
-            qs_new.append(Image.objects.get(id=flat[i]))
+        print("time with tensorflow loading : " + str(t2 - t1))
 
-        pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
-        paginator = YourPagination()
-        page = paginator.paginate_queryset(qs_new, request)
-        images_serializer = ImageSerializer(page, many=True)
-        return paginator.get_paginated_response(images_serializer.data)
+        images_serializer = ImageSerializer(qs_new, many=True)
+
+        return response.Response({
+            'results':images_serializer.data,
+            'total_pages': math.ceil(Image.objects.count()/api_settings.PAGE_SIZE),
+        })
 
 
 @csrf_exempt
@@ -128,40 +164,25 @@ def query_up(request):
 
 class QueryGetView(generics.ListAPIView):
     def get(self, request, img_name):
-        start = time.time()
         print("start counting")
-        query_signature = extract_feat(settings.MEDIA_ROOT + "/temp/" + img_name + ".jpg")  # a NumPy-Array object
-        # print(query_signature)
+        t1 = time.time()
 
-        value_dict = {}
-        for image in Image.objects.all():
-            S = image.signature
-            value_dict[image.id] = np.dot(
-                JSONVectConverter.json_to_vect(S),
-                query_signature.T
-            ).astype(float)
+        query_signature = extract_feat(
+            settings.MEDIA_ROOT + "/temp/" + img_name + ".jpg")  # a NumPy-Array object
+        qs_new = query_over_db(query_signature, int(request.GET['page']))
 
-        flat = sorted(value_dict, key=value_dict.__getitem__)[
-               ::-1]  # lista ordinata delle PK degli elementi da visualizzare
-        # print(sorted(value_dict, key=value_dict.__getitem__))
-        # print(sorted(value_dict.values()))
-        end = time.time()
-        print(end - start)  # quanto impiega a svolgere il mega prodotto scalare
-
-        qs_new = []
-        # nToDisplay = 30
-        # flat = flat[:nToDisplay]
-        for i in range(len(flat)):
-            qs_new.append(Image.objects.get(id=flat[i]))
-        end = time.time()
-        # images_serializer = ImageSerializer(qs_new, many=True)
-        print(end - start)
+        t2 = time.time()
+        print("time with tensorflow loading : " + str(t2 - t1))
 
         paginator = YourPagination()
         page = paginator.paginate_queryset(qs_new, request)
-        images_serializer = ImageSerializer(page, many=True)
-        return paginator.get_paginated_response(images_serializer.data)
 
+        images_serializer = ImageSerializer(qs_new, many=True)
+
+        return response.Response({
+            'results': images_serializer.data,
+            'total_pages': math.ceil(Image.objects.count() / api_settings.PAGE_SIZE),
+        })
 
 class ImageUploadView(views.APIView):
     parser_classes = (MultiPartParser,)
@@ -185,4 +206,26 @@ class ImageUploadView(views.APIView):
         new_image.signature = JSONVectConverter.vect_to_json(
             extract_feat(settings.BASE_DIR + "/" + new_image.image.name))
         new_image.save()
+
+        id_vector = cache.get('id_vector')
+        descriptor_matrix = cache.get('descriptor_matrix')
+
+
+        if not descriptor_matrix:
+            id_vector = []
+            descriptor_matrix = []
+            for image in Image.objects.all():
+                s = image.signature
+                descriptor = JSONVectConverter.json_to_vect(s)
+                descriptor_matrix.append(descriptor)
+                id_vector.append(image.id)
+
+            cache.set('id_vector', id_vector)
+            cache.set('descriptor_matrix', descriptor_matrix)
+        else:
+            s = new_image.signature
+            descriptor = JSONVectConverter.json_to_vect(s)
+            descriptor_matrix.append(descriptor)
+            id_vector.append(new_image.id)
+
         return JSONResponse(ImageSerializer(new_image).data, status=status.HTTP_201_CREATED)

@@ -7,6 +7,7 @@ from keras import backend as K
 from keras.applications.vgg16 import VGG16
 from keras.preprocessing import image
 from keras.applications.vgg16 import preprocess_input
+from django.core.cache import cache
 
 '''
  Use vgg16 model to extract features
@@ -20,8 +21,12 @@ def extract_feat(img_path):
     # input_shape: (width, height, 3), width and height should >= 48
 
     input_shape = (224, 224, 3)
+    model = cache.get('model')
+
+
     model = VGG16(weights='imagenet', input_shape=(input_shape[0], input_shape[1], input_shape[2]), pooling='max',
                   include_top=False)
+
 
     img = image.load_img(img_path, target_size=(input_shape[0], input_shape[1]))
     img = image.img_to_array(img)
