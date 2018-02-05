@@ -1,5 +1,4 @@
-import sys, os
-
+import sys, os, time
 sys.path.append('C:/Users/Federico/image_prova/Scripts/image_prova')
 from django.core.management.base import BaseCommand
 from images.models import Image
@@ -9,6 +8,7 @@ from numpy import linalg as LA
 from keras.applications.vgg16 import VGG16
 from keras.preprocessing import image
 from keras.applications.vgg16 import preprocess_input
+
 
 
 def get_imlist(path):
@@ -23,8 +23,10 @@ def extract_feat(tensor):
     input_shape = (224, 224, 3)
     model = VGG16(weights='imagenet', input_shape=(input_shape[0], input_shape[1], input_shape[2]), pooling='max',
                   include_top=False)
-
+    t1 = time.time()
     feature_tensor = model.predict(tensor)
+    t2 = time.time()
+    print("Time to predict: " + str(t2 - t1))
     feature_matrix = []
     for feature_vector in feature_tensor:
         feature_matrix.append(feature_vector / LA.norm(feature_vector))
@@ -57,4 +59,4 @@ class Command(BaseCommand):
                 image=img_path,
                 signature=JSONVectConverter.vect_to_json(feature_matrix[i])
             )
-            print("------------------------ " + new_image.title + " saved on DB -------------------")
+            #print("------------------------ " + new_image.title + " saved on DB -------------------")
