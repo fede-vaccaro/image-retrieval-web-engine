@@ -34,5 +34,5 @@ def extract_feat(img_path):
     img = preprocess_input(img)
     feat = model.predict(img)
     norm_feat = feat[0] / LA.norm(feat[0])
-    K.clear_session()
+    #K.clear_session()
     return norm_feat
