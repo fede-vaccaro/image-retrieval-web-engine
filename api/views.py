@@ -38,6 +38,10 @@ def query_over_db(query_signature, page):
     print("time to pull out the descriptors : " + str(t1 - t0))
 
     result = np.dot(descriptor_matrix, query_signature)
+    
+    t2 = time.time()	
+    print("time to make the big dot product: " + str(t2 - t1))
+
     value_dict = {}
 
     for i in range(len(id_vector)):
@@ -46,11 +50,12 @@ def query_over_db(query_signature, page):
     flat = sorted(value_dict, key=value_dict.__getitem__)[
            ::-1]  # lista ordinata delle PK degli elementi da visualizzare
 
-    t2 = time.time()
-
+    
     flat = flat[(page-1)*30:page*30]
 
-    print("time to make the dot product and order the result: " + str(t2 - t1))
+    t4 = time.time()	
+
+    print("time to order the result: " + str(t4 - t2))
 
     qs_new = []
 
