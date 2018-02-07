@@ -1,6 +1,6 @@
 Needed package:
 
-tensorflow;
+tensorflow(<1.5);
 keras; 
 django;
 django_restframework;
