@@ -234,8 +234,6 @@ class QueryGetView(generics.ListAPIView):
         t2 = time.time()
         print("time with tensorflow loading : " + str(t2 - t1))
 
-        paginator = YourPagination()
-        page = paginator.paginate_queryset(qs_new, request)
 
         images_serializer = ImageSerializer(qs_new, many=True)
 
