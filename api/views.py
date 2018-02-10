@@ -7,7 +7,7 @@ from rest_framework.settings import api_settings
 from django.conf import settings
 from django.http import HttpResponse
 from images.models import Image
-from images.extract_cnn_vgg16_keras import extract_feat
+from images.extract_cnn_vgg16_keras import extract_feat_CNN
 from django.core.files.images import ImageFile
 from django.shortcuts import get_object_or_404
 from django.core.files.storage import FileSystemStorage
@@ -40,7 +40,6 @@ def query_over_db(query_signature, page):
     print("time to pull out the descriptors : " + str(t1 - t0))
 
     result = np.dot(descriptor_matrix, query_signature)
-
     t2 = time.time()
     print("time to make the big dot product: " + str(t2 - t1))
 
@@ -51,6 +50,8 @@ def query_over_db(query_signature, page):
 
     flat = sorted(value_dict, key=value_dict.__getitem__)[
            ::-1]  # lista ordinata delle PK degli elementi da visualizzare
+
+    print(sorted(result)[:30])
 
     flat = flat[(page - 1) * 30:page * 30]
 
@@ -227,7 +228,7 @@ class QueryGetView(generics.ListAPIView):
         print("start counting")
         t1 = time.time()
 
-        query_signature = extract_feat(
+        query_signature = extract_feat_CNN(
             settings.MEDIA_ROOT + "/temp/" + img_name + ".jpg")  # a NumPy-Array object
         qs_new = query_over_db(query_signature, int(request.GET['page']))
 
@@ -262,7 +263,7 @@ class ImageUploadView(views.APIView):
         except:
             return HttpResponse("something went wrong.", status=status.HTTP_400_BAD_REQUEST)
         new_image = Image.objects.create(title=title_, quote=quote_, image=ImageFile(img))
-        new_image.signature = (extract_feat(settings.BASE_DIR + "/" + new_image.image.name)).tolist()
+        new_image.signature = (extract_feat_CNN(settings.BASE_DIR + "/" + new_image.image.name)).tolist()
         new_image.save()
 
         id_vector = cache.get('id_vector')

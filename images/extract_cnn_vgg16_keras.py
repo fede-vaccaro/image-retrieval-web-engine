@@ -37,7 +37,7 @@ def extract_feat_CNN(img_path):
     #K.clear_session()
     return norm_feat
 
-def extract_feat(img_path):
+def extract_feat_FCL(img_path):
     # weights: 'imagenet'
     # pooling: 'max' or 'avg'
     # input_shape: (width, height, 3), width and height should >= 48
