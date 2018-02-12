@@ -38,36 +38,32 @@ def query_over_db(query_signature, page):
 
     t1 = time.time()
     print("time to pull out the descriptors : " + str(t1 - t0))
+    #result = np.abs(np.dot(descriptor_matrix, query_signature.T))
+    result = np.sum((descriptor_matrix - query_signature)**2, axis=1)
 
-    result = np.dot(descriptor_matrix, query_signature)
     t2 = time.time()
     print("time to make the big dot product: " + str(t2 - t1))
 
-    value_dict = {}
+    perm = np.argsort(result)[(page - 1) * 30:page * 30]
+    perm_id = np.array(id_vector)[perm]
 
-    for i in range(len(id_vector)):
-        value_dict[id_vector[i]] = result[i]
-
-    flat = sorted(value_dict, key=value_dict.__getitem__)[
-           ::-1]  # lista ordinata delle PK degli elementi da visualizzare
-
-    print(sorted(result)[:30])
-
-    flat = flat[(page - 1) * 30:page * 30]
+    print("printing sort")
+    print(np.sort(result)[0])
 
     t4 = time.time()
 
     print("time to order the result: " + str(t4 - t2))
 
-    qs = Image.objects.defer('signature').filter(id__in=flat)
+    qs = Image.objects.defer('signature').filter(id__in=perm_id.tolist())
 
     qs_new = []
-    for i in range(len(flat)):
-        qs_new.append(qs.get(id=flat[i]))
+    for i in range(len(perm_id)):
+        qs_new.append(qs.get(id=perm_id[i]))
 
     t3 = time.time()
     print("time to get the results from the DB : " + str(t3 - t2))
     print("total time : " + str(t3 - t0))
+    print(result[perm])
     return qs_new
 
 

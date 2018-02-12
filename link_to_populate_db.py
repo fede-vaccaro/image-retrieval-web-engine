@@ -1,0 +1,1 @@
+/home/fede/Documenti/cnsearch/lib/python3.6/site-packages/django/core/management/commands/populate_db.py

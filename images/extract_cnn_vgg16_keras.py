@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Author: yongyuan.name
-
+import sys, os
 import numpy as np
 from numpy import linalg as LA
 from keras import Model
@@ -8,7 +8,9 @@ from keras import backend as K
 from keras.applications.vgg16 import VGG16
 from keras.preprocessing import image
 from keras.applications.vgg16 import preprocess_input
-
+import execnet
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from yael_wrapper import process_desc
 '''
  Use vgg16 model to extract features
  Output normalized feature vector
@@ -34,6 +36,9 @@ def extract_feat_CNN(img_path):
     img = preprocess_input(img)
     feat = model.predict(img)
     norm_feat = feat[0] / LA.norm(feat[0])
+
+    norm_feat = process_desc(norm_feat)
+
     #K.clear_session()
     return norm_feat
 
