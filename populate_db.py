@@ -10,8 +10,6 @@ from keras import Model
 from keras.applications.vgg16 import VGG16
 from keras.preprocessing import image
 from keras.applications.vgg16 import preprocess_input
-from subprocess import call
-
 
 
 def call_python_version(Version, Module, Function, ArgumentList):
@@ -25,13 +23,8 @@ def call_python_version(Version, Module, Function, ArgumentList):
 
 
 def process_descs_matrix():
+    print("entering in yael_script.py")
     result = call_python_version("2.7", "yael_script", "process",
-                                 [])
-    return result
-
-
-def testYael():
-    result = call_python_version("2.7", "yael_v438.yael_script", "isWorking",
                                  [])
     return result
 
@@ -102,25 +95,30 @@ class Command(BaseCommand):
         Image.objects.all().delete()
         img_list = get_imlist('img')
 
-        #Extract features
-        feature_matrix = extract_feat_from_CNN(create_image_tensor(img_list))
+        #flag for avoiding recreate existing file -- set it manually
+        exist_feature_matrix = True
+        if not exist_feature_matrix:
+            #Extract features
+            feature_matrix = extract_feat_from_CNN(create_image_tensor(img_list))
 
-        #Save datas, in order to communicate with Yael
-        h5f = h5py.File("feature_matrix.h5", 'w')
-        h5f.create_dataset('feature_matrix', data=feature_matrix)
-        h5f.close()
+            #Save datas, in order to communicate with Yael
+            h5f = h5py.File("feature_matrix.h5", 'w')
+            h5f.create_dataset('feature_matrix', data=feature_matrix)
+            h5f.close()
 
-        print("Feature extracted and saved on feature_matrix.h5")
+            print("Feature extracted and saved on feature_matrix.h5")
 
-        #Call yael script
-        result = process_descs_matrix()
+        exist_image_fvs = False
+        if not exist_image_fvs:
+            #Call yael script
+            result = process_descs_matrix()
 
-        #Naive handling
-        if result == "YAEL SCRIPT: Mission accomplished!":
-            print(result)
-        else:
-            print("ERROR")
-            return
+            #Naive error handling
+            if result == "YAEL SCRIPT: Mission accomplished!":
+                print(result)
+            else:
+                print("ERROR")
+                return
 
         #Open yael script computing results
         h5f = h5py.File("image_fvs.h5", 'r')
