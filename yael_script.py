@@ -129,5 +129,5 @@ def myPCA(matrix, dim):
     return pca
 
 #if want to run it from shell
-desc = np.random.rand(512)
-process(desc)
+#desc = np.random.rand(512)
+process()

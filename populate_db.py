@@ -1,11 +1,8 @@
 import sys, os, time, execnet, h5py
-
 sys.path.append('/home/fede/Documenti/cnsearch/')
 from django.core.management.base import BaseCommand
 from images.models import Image
-from images.npjson import JSONVectConverter
 import numpy as np
-from numpy import linalg as LA
 from keras import Model
 from keras.applications.vgg16 import VGG16
 from keras.preprocessing import image
@@ -45,14 +42,8 @@ def extract_feat_from_CNN(tensor):
     feature_tensor = model.predict(tensor)
     t2 = time.time()
     print("Time to predict: " + str(t2 - t1))
-    # feature_matrix = []
-    # for feature_vector in feature_tensor:
-    #    feature_matrix.append(feature_vector / LA.norm(feature_vector))
-    # K.clear_session()
-    # return feature_matrix
     print(feature_tensor.shape)
-    # JSONVectConverter.save_vect_to_json("IMAGE_TENSOR", feature_tensor)
-    # print("TENSOR SAVED ON DISK")
+
     return feature_tensor
 
 
@@ -67,11 +58,6 @@ def extract_feat_from_FCL(tensor):
     feature_tensor = intermediate_layer_model.predict(tensor)
     t2 = time.time()
     print("Time to predict: " + str(t2 - t1))
-    # feature_matrix = []
-    # for feature_vector in feature_tensor:
-    #    feature_matrix.append(feature_vector / LA.norm(feature_vector))
-    # K.clear_session()
-    # return feature_matrix
     print(feature_tensor.shape)
     return feature_tensor
 
@@ -134,4 +120,3 @@ class Command(BaseCommand):
                 image=img_path,
                 signature=image_fvs[i].tolist()
             )
-            #print("------------------------ " + new_image.title + " saved on DB -------------------")
