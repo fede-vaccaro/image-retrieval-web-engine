@@ -25,7 +25,7 @@ SECRET_KEY = '$cb#6qs3=xi3f84_%gfkkp@f92i)k#$$fynpf+=3@09kpw)f*!'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "192.168.0.2", "127.0.0.1", "192.168.0.4",
+    "192.168.0.2", "127.0.0.1", "192.168.0.7",
 ]
 
 # Application definition

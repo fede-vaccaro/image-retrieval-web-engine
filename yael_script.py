@@ -45,7 +45,7 @@ def process(signature=None):
         print("there aren't GMM and pca_transform: computing.")
         #k is the GMM dimension
         k = 512
-        n_sample = k * 1000
+        n_sample = k * 100
 
         #choose n_sample descriptors at random
         sample_indices = np.random.choice(all_desc.shape[0], n_sample)

@@ -9,8 +9,10 @@ from keras.applications.vgg16 import VGG16
 from keras.preprocessing import image
 from keras.applications.vgg16 import preprocess_input
 import execnet
+
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from yael_wrapper import process_desc
+
 '''
  Use vgg16 model to extract features
  Output normalized feature vector
@@ -24,7 +26,6 @@ def extract_feat_CNN(img_path):
 
     input_shape = (224, 224, 3)
 
-
     model = VGG16(weights='imagenet', input_shape=(input_shape[0], input_shape[1], input_shape[2]), pooling='max',
                   include_top=False)
 
@@ -37,10 +38,14 @@ def extract_feat_CNN(img_path):
     feat = model.predict(img)
     norm_feat = feat[0] / LA.norm(feat[0])
 
-    norm_feat = process_desc(norm_feat)
+    use_fv_processing = False
 
-    #K.clear_session()
+    if use_fv_processing:
+        norm_feat = process_desc(norm_feat)
+
+    # K.clear_session()
     return norm_feat
+
 
 def extract_feat_FCL(img_path):
     # weights: 'imagenet'
@@ -49,11 +54,8 @@ def extract_feat_FCL(img_path):
 
     input_shape = (224, 224, 3)
 
-
     model = VGG16(weights='imagenet', input_shape=(input_shape[0], input_shape[1], input_shape[2]), pooling='max',
                   include_top=True)
-
-
 
     img = image.load_img(img_path, target_size=(input_shape[0], input_shape[1]))
     img = image.img_to_array(img)
@@ -66,5 +68,12 @@ def extract_feat_FCL(img_path):
     feat = intermediate_layer_model.predict(img)
 
     norm_feat = feat[0] / LA.norm(feat[0])
-    K.clear_session()
+
+    # K.clear_session()
+    use_fv_processing = True
+
+    if use_fv_processing:
+        norm_feat = process_desc(norm_feat)
+
+
     return norm_feat

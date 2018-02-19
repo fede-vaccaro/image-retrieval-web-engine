@@ -7,7 +7,7 @@ from rest_framework.settings import api_settings
 from django.conf import settings
 from django.http import HttpResponse
 from images.models import Image
-from images.extract_cnn_vgg16_keras import extract_feat_CNN
+from images.extract_cnn_vgg16_keras import extract_feat_CNN, extract_feat_FCL
 from django.core.files.images import ImageFile
 from django.shortcuts import get_object_or_404
 from django.core.files.storage import FileSystemStorage
