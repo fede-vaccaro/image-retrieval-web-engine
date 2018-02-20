@@ -7,7 +7,7 @@ from keras import Model
 from keras import backend as K
 from keras.applications.vgg16 import VGG16
 from keras.preprocessing import image
-from keras.applications.vgg16 import preprocess_input
+from keras.applications.vgg16 import preprocess_input, decode_predictions
 import execnet
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
@@ -17,6 +17,17 @@ from yael_wrapper import process_desc
  Use vgg16 model to extract features
  Output normalized feature vector
 '''
+def get_tags(input):
+    tags_matrix = []
+    predictions_tensor = decode_predictions(input)
+    for img in predictions_tensor:
+        tags = []
+        for prediction in img:
+            id, name, odd = prediction
+            if odd > 0.25:
+                tags.append(name)
+        tags_matrix.append(tags)
+    return tags_matrix
 
 
 def extract_feat_CNN(img_path):
@@ -66,14 +77,16 @@ def extract_feat_FCL(img_path):
     intermediate_layer_model = Model(inputs=model.input,
                                      outputs=model.get_layer(layer_name).output)
     feat = intermediate_layer_model.predict(img)
+    predictions = model.predict(img)
+    tags_matrix = get_tags(predictions)
 
-    norm_feat = feat[0] / LA.norm(feat[0])
+    #norm_feat = feat[0] / LA.norm(feat[0])
 
     # K.clear_session()
     use_fv_processing = True
 
-    if use_fv_processing:
-        norm_feat = process_desc(norm_feat)
+    #if use_fv_processing:
+    #    norm_feat = process_desc(norm_feat)
 
 
-    return norm_feat
+    return feat, tags_matrix[0]

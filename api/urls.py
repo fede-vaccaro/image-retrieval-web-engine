@@ -3,7 +3,7 @@ from . import views
 from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
-    url(r'^image_upload/', csrf_exempt(views.ImageUploadView.as_view())),
+    url(r'^image_upload/', views.ImageUploadView.as_view()),
     url(r'^query_up/', views.query_up),
     # url(r'^image_list/', views.image_list),
     url(r'^image_list/', csrf_exempt(views.ImageListView.as_view())),

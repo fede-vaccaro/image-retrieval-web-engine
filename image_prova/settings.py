@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'frontend.apps.FrontendConfig',
     'rest_framework',
+    'taggit',
+    'taggit_serializer',
 ]
 
 MIDDLEWARE = [

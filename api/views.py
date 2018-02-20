@@ -4,6 +4,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import MultiPartParser
 from rest_framework import status, views, response, generics, pagination
 from rest_framework.settings import api_settings
+from rest_framework.authentication import TokenAuthentication
 from django.conf import settings
 from django.http import HttpResponse
 from images.models import Image
@@ -224,7 +225,7 @@ class QueryGetView(generics.ListAPIView):
         print("start counting")
         t1 = time.time()
 
-        query_signature = extract_feat_CNN(
+        query_signature, _ = extract_feat_FCL(
             settings.MEDIA_ROOT + "/temp/" + img_name + ".jpg")  # a NumPy-Array object
         qs_new = query_over_db(query_signature, int(request.GET['page']))
 
@@ -242,6 +243,7 @@ class QueryGetView(generics.ListAPIView):
 
 class ImageUploadView(views.APIView):
     parser_classes = (MultiPartParser,)
+    authentication_classes = (TokenAuthentication,)
 
     def post(self, request):
         title_ = request.data['title']
@@ -259,7 +261,10 @@ class ImageUploadView(views.APIView):
         except:
             return HttpResponse("something went wrong.", status=status.HTTP_400_BAD_REQUEST)
         new_image = Image.objects.create(title=title_, quote=quote_, image=ImageFile(img))
-        new_image.signature = (extract_feat_CNN(settings.BASE_DIR + "/" + new_image.image.name)).tolist()
+        signature_, tags = extract_feat_FCL(settings.BASE_DIR + "/" + new_image.image.name)
+        new_image.signature = signature_[0].tolist()
+        for tag in tags:
+            new_image.tags.add(tag)
         new_image.save()
 
         id_vector = cache.get('id_vector')

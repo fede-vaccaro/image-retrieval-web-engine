@@ -1,5 +1,6 @@
 import os
 from django.db import models
+from taggit.managers import TaggableManager
 from django.conf import settings
 from django.utils.timezone import now as timezone_now
 from django.contrib.postgres.fields import ArrayField
@@ -21,6 +22,7 @@ class Image(models.Model):
     created = models.DateField(auto_now_add=True)
     quote = models.TextField(null=True)
     signature = ArrayField(base_field=models.FloatField(), null=True)
+    tags = TaggableManager()
 
     def __str__(self):
         return self.title

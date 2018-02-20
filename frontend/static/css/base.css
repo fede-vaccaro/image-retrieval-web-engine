@@ -24,16 +24,29 @@
   border-radius: 8px; 
 }
 */
+
+
 #overlay img{
     display: block;
     margin-left: auto;
     margin-right: auto;
     margin-top: 100px;
-    margin-bottom: 100px;
     max-height: 75%;
     max-width: 75%;
-    border: 8px solid #210606;
-    border-radius: 8px; 
+    border: 3px solid #210606;
+    border-radius: 4px;
+    background-color: white;
+}
+
+#overlay div.polaroid {
+  background-color: white;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
+}
+
+#overlay div.tags {
+  text-align: center;
+  color: white;
 }
 
 
@@ -516,7 +529,7 @@ a.like, a.follow { float:right; margin-top:-8px; }
 
 }
 #image-list .myImg { width:220px; height:220px; object-fit: cover; }
-#image-list .info {font-family: 'Muli', sans-serif; padding:5px; overflow: hidden; text-align: justify}
+#image-list .info {font-family: 'Muli', sans-serif; padding:5px; overflow: hidden; text-align: center}
 #image-list .info a { color:#333; }
 .image-likes div {
     float:left;
