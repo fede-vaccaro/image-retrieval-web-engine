@@ -24,7 +24,7 @@ def get_tags(input):
         tags = []
         for prediction in img:
             id, name, odd = prediction
-            if odd > 0.25:
+            if odd > 0:
                 tags.append(name)
         tags_matrix.append(tags)
     return tags_matrix
