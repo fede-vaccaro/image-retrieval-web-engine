@@ -1,5 +1,6 @@
-<form name="uploadForm" ng-controller = "myCtrl">    
-    <input type="text" ng-model="myTitle", name="title" placeholder="Put a title first..." required>
+<form name="uploadForm" ng-controller="myCtrl">
+    <input type="text" ng-model="myTitle" , name="title" placeholder="Put a title first..." required>
     <input type="file" id="myInput" accept="image/jpeg" file-model="myFile" name="fileInput" required>
-    <input ng-disable="true" type="button" ng-disabled="uploadForm.title.$error.required", ng-click="clickUpload()" value="Upload me!">
+    <input ng-disable="true" type="button" ng-disabled="uploadForm.title.$error.required" , ng-click="clickUpload()"
+           value="Upload me!">
 </form>

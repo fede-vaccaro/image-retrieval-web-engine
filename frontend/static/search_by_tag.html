@@ -1,0 +1,5 @@
+<form name="uploadForm" ng-controller="tagCtrl">
+    <input ng-keypress="myFunct($event)" type="text" ng-model="myTag" name="title" placeholder="Search by putting a tag">
+    <input ng-click="search(myTag)"  type="button" value="Search">
+    <span style="margin-left: 30px; margin-top: 10px; color:red">{{ error }}</span>
+</form>

@@ -2,55 +2,68 @@
 <html>
 <head>
     <!-- Include Angular and several angular libraries -->
-    <script src="modules/angular.min.js"></script>
+    <script src="node_modules/angular/angular.js"></script>
+    <script src="node_modules/angular-aria/angular-aria.js"></script>
+    <script src="node_modules/angular-animate/angular-animate.js"></script>
+    <script src="node_modules/angular-material/angular-material.js"></script>
+    <script src="node_modules/angular-messages/angular-messages.js"></script>
     <script src="modules/angular-route.js"></script>
-    <script src="modules/angular-animate.js"></script>
     <!-- Include our app -->
     <script src="js/app.js"></script>
 
     <!-- Include CSS style -->
     <link href="css/base.css" rel="stylesheet">
-    
-    </head>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+
+
+</head>
 <body>
 
-<div ng-app = "myApp" ng-controller='mainCtrl'>
-<div id="header">
-<span class="logo">CN-Search</span>
-
-    
-<title>CN-Search</title>
-    
+<div ng-app="myApp" ng-controller='mainCtrl'>
+    <div id="header">
+        <span class="logo">CN-Search</span>
 
 
-<ul class="menu">
-<li ng-class=""><a href="" ng-click="moreImages()"><span class="tooltip">Pictures
+        <title>CN-Search</title>
+
+
+        <ul class="menu">
+            <li ng-class=""><a href="" ng-click="moreImages()"><span class="tooltip">More Pictures
   <span class="tooltiptext">Click to show more random pictures.</span>
 </span></a></li>
-<li ng-class="selectedB" ng-controller="queryCtrl"><a href="" ng-click="clickUpload()"><span class="tooltip">Search
+            <li ng-class="" ng-controller="queryCtrl"><a href="" ng-click="clickUpload()">
+                <span class="tooltip">Search by Image
   <span class="tooltiptext">Load a pictures from your device, then retrieve the similar ones.</span>
 </span></a></li>
-<li ng-class="selectedD"><a href="" ng-click="b_up = false; up = !up; deselectAll(); (up ? selectedD = 'selected' : selectedD = '');"><span class="tooltip">Share
+            <li ng-class="selectedSBT"><a href="" ng-click="clickSBT()"><span
+                    class="tooltip">Search by Tag
+  <span class="tooltiptext">Search the pictures with a given tag.</span>
+</span></a></li>
+            <li ng-class="selectedUp"><a href="" ng-click="clickUpload_()"><span class="tooltip">Share
   <span class="tooltiptext">Share with others your picture.</span>
 </span></a></li>
-<li ng-class="selectedC"><a href="" ng-click="explore_var = !explore_var; clickExplore();"><span class="tooltip">{{ exploreMenu }}
+            <li ng-class="selectedC"><a href="" ng-click="clickExplore();"><span class="tooltip">{{ exploreMenu }}
   <span class="tooltiptext">This is an On/Off mode: once activated, click on a picture to search and explore what is similar.</span>
 </span></a></li>
 
-</ul>
 
-<span class="user">A Deep Learning-based image search engine.</span>
-    
-    
-</div>
-    
-<div id="content">
-<span ng-include="'upload.htm'" ng-hide="!up"></span>
-<span ng-include="'search.htm'" ng-hide="!selectedB"></span><br>
-<div id="image-list">
-<div ng-view></div></div></div>      
-    
-    
+        </ul>
+
+        <span class="user">A Deep Learning-based image search engine.</span>
+
+
+    </div>
+
+    <div id="content">
+        <span ng-include="'upload.htm'" ng-hide="!selectedUp"></span>
+        <span ng-include="'search.htm'" ng-hide=""></span>
+        <span ng-include="'search_by_tag.html'" ng-hide="!selectedSBT"></span>
+        <br>
+        <div id="image-list">
+            <div ng-view></div>
+        </div>
+    </div>
+
 
 </div>
 

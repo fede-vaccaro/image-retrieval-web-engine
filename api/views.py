@@ -1,4 +1,5 @@
 from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render_to_response
 from .serializers import ImageSerializer
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import MultiPartParser
@@ -13,6 +14,7 @@ from django.core.files.images import ImageFile
 from django.shortcuts import get_object_or_404
 from django.core.files.storage import FileSystemStorage
 from django.core.cache import cache
+from taggit.models import Tag
 import os, time, math
 import numpy as np
 import heapq
@@ -150,10 +152,18 @@ def image_list(request):
         return JSONResponse(images_serializer.data, status=status.HTTP_202_ACCEPTED)
 
 
+class RetrieveByTagView(generics.ListAPIView):
+    def get(self, request, tag):
+        tags = get_object_or_404(Tag, slug=tag)
+        images = Image.objects.filter(tags__in=[tags])
+        paginator = YourPagination()
+        page = paginator.paginate_queryset(images, request)
+        images_serializer = ImageSerializer(page, many=True)
+        return paginator.get_paginated_response(images_serializer.data)
+
 class ImageListView(generics.ListAPIView):
     def get(self, request):
         images = Image.objects.all().order_by('?')
-        pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
         paginator = YourPagination()
         page = paginator.paginate_queryset(images, request)
         images_serializer = ImageSerializer(page, many=True)
@@ -188,6 +198,14 @@ def get_image(request, pk):
         image = get_object_or_404(Image.objects.all(), pk=pk)
         return JSONResponse(ImageSerializer(image).data, status=status.HTTP_202_ACCEPTED)
 
+@csrf_exempt
+def retrieve_tags(request):
+    if request.method == 'GET':
+        tags = Image.tags.values('slug')
+        tags_vect = []
+        for tag in tags:
+            tags_vect.append(tag['slug'])
+        return JSONResponse(tags_vect)
 
 class OverAllowedDimension(Exception):
 
@@ -196,6 +214,8 @@ class OverAllowedDimension(Exception):
         self.thisDim = thisDim
         self.message = "Sent file is bigger than allowed: " + str(thisDim) + " > " + str(maxAllowedDim) + " !"
         print(self.message)
+
+
 
 
 @csrf_exempt

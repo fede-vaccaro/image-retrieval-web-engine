@@ -1,39 +1,44 @@
-<div ng-controller = "listCtrl" ng-hide="Search">
+<div ng-controller="listCtrl" ng-hide="Search">
     <div ng-repeat="image in imageList">
         <div class="image">
-        
-        <div ng-show="!explore_var">
-        <a ng-href="" ng-click="showImage(image);">
-        <img class="myImg"ng-src="{{ image.image }}"></a><br/><div class='info'> {{ image.title }}</div>
-            </div>
-        
-            
-            
-        <div ng-show="explore_var">      
-        <img class="myImg" ng-click="pages.current = 1; explore(image.pk)" ng-src="{{ image.image }}" width="200"><br/><div class='info'> {{ image.title }}</div></div></div>
 
-</div>
-    
+            <div ng-show="!explore_var">
+                <a ng-href="" ng-click="showImage(image);">
+                    <img class="myImg" ng-src="{{ image.image }}"></a><br/>
+                <div class='info'> {{ image.title }}</div>
+            </div>
+
+
+            <div ng-show="explore_var">
+                <img class="myImg" ng-click="pages.current = 1; explore(image.pk)" ng-src="{{ image.image }}"
+                     width="200"><br/>
+                <div class='info'> {{ image.title }}</div>
+            </div>
+        </div>
+
+    </div>
+
     <div ng-show="showOverlay" id="overlay">
         <span class="close cursor" ng-click="showOverlay = false">&times;</span>
-  		<img ng-src="{{ imageToShow.image }}">
- 	 	<div class="tags">
-   		 <p ng-show="imageToShow.tags[0]">Tags: <span ng-repeat="tag in imageToShow.tags">{{ tag }}. </span></p>
-  		</div>
-	
+        <img ng-src="{{ imageToShow.image }}">
+        <div class="tags">
+            <p ng-show="imageToShow.tags[0]">Tags: <span ng-repeat="tag in imageToShow.tags"> <a ng-href="" ng-click="retrieveByTag(tag)">{{ tag }}</a> </span></p>
+        </div>
+
     </div>
-    
+
     <div class="w3-center w3-padding-32" ng-show="exploring">
         <div class="w3-bar">
-        <a class="w3-bar-item w3-button w3-hover-black" href="" ng-click="changePage(1)">First Page</a>
-        <a class="w3-bar-item w3-button w3-hover-black" href="" ng-click="changePage(pages.current - 1)" >«</a>
-        <span ng-repeat="p in pages.allPages">
+            <a class="w3-bar-item w3-button w3-hover-black" href="" ng-click="changePage(1)">First Page</a>
+            <a class="w3-bar-item w3-button w3-hover-black" href="" ng-click="changePage(pages.current - 1)">«</a>
+            <span ng-repeat="p in pages.allPages">
             <a ng-class="isCurrent(p)" ng-show="isVisible(p)" href="" ng-click="changePage( p )">{{ p }}</a>
         </span>
-        <a class="w3-bar-item w3-button w3-hover-black" href="" ng-click="changePage(pages.current + 1 )">»</a>
-        <a class="w3-bar-item w3-button w3-hover-black" href="" ng-click="changePage(pages.allPages.length)"> Last Page</a>
+            <a class="w3-bar-item w3-button w3-hover-black" href="" ng-click="changePage(pages.current + 1 )">»</a>
+            <a class="w3-bar-item w3-button w3-hover-black" href="" ng-click="changePage(pages.allPages.length)"> Last
+                Page</a>
         </div>
     </div>
-    
-    
+
+
 </div>
