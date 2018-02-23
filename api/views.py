@@ -9,12 +9,13 @@ from rest_framework.authentication import TokenAuthentication
 from django.conf import settings
 from django.http import HttpResponse
 from images.models import Image
-from images.extract_cnn_vgg16_keras import extract_feat_CNN, extract_feat_FCL
+from images.extract_cnn_vgg16_keras import extract_feat_CNN, extract_feat_FCL, extract_feat_FCL_from_img
 from django.core.files.images import ImageFile
 from django.shortcuts import get_object_or_404
 from django.core.files.storage import FileSystemStorage
 from django.core.cache import cache
 from taggit.models import Tag
+import PIL
 import os, time, math
 import numpy as np
 import numexpr as ne
@@ -22,6 +23,9 @@ import uuid
 
 
 def query_over_db(query_signature, page):
+
+    query_signature = np.array(query_signature)
+
     t0 = time.time()
 
     descriptor_matrix = cache.get('descriptor_matrix')
@@ -184,21 +188,32 @@ def query_up(request):
             return HttpResponse(err.message, status=status.HTTP_400_BAD_REQUEST)
         except:
             return HttpResponse("something went wrong.", status=status.HTTP_400_BAD_REQUEST)
-        location = settings.MEDIA_ROOT + "/temp"
-        fs = FileSystemStorage(location=location, base_url=settings.MEDIA_URL + "/cache")
-        fs.save(myfile.name, myfile)
-        filename_base = os.path.splitext(myfile.name)
-        image_path = filename_base[0]
-        return HttpResponse(image_path, status=status.HTTP_202_ACCEPTED)
+
+        img = PIL.Image.open(myfile)
+        img = img.resize((224, 224), PIL.Image.ANTIALIAS)
+        t = time.time()
+        query_signature = extract_feat_FCL(img, predict_tags=False)
+        print("time to extract features of {0} : {1}s".format(myfile.name, time.time() - t))
+        identifier = uuid.uuid4()
+        cache.set(identifier, query_signature, 60*5)
+
+        print("ID generated is {}".format(identifier))
+
+
+        return HttpResponse(identifier, status=status.HTTP_202_ACCEPTED)
 
 
 class QueryGetView(generics.ListAPIView):
-    def get(self, request, img_name):
+    def get(self, request, identifier):
         print("start counting")
         t1 = time.time()
 
-        query_signature = extract_feat_FCL(
-            settings.MEDIA_ROOT + "/temp/" + img_name + ".jpg", False)  # a NumPy-Array object
+        query_signature = cache.get(identifier).tolist()
+
+        if not query_signature[0]:
+            "identifier {} doesn't exists.".format(identifier)
+            return HttpResponse("Asking for an inexistent identifier: error. Maybe is your session expired?", status=status.HTTP_400_BAD_REQUEST)
+
         qs_new = query_over_db(query_signature, int(request.GET['page']))
 
         t2 = time.time()
@@ -234,30 +249,24 @@ class ImageUploadView(views.APIView):
             return HttpResponse("something went wrong.", status=status.HTTP_400_BAD_REQUEST)
         try:
             new_image = Image.objects.create(title=title_, quote=quote_, image=ImageFile(img))
-            signature_, tags = extract_feat_FCL(settings.BASE_DIR + "/" + new_image.image.name, True)
+
+            image = PIL.Image.open(img)
+            image = image.resize((224, 224), PIL.Image.ANTIALIAS)
+
+
+            signature_, tags = extract_feat_FCL(image, predict_tags=True)
             new_image.signature = signature_[0].tolist()
             for tag in tags:
                 new_image.tags.add(tag)
             new_image.save()
         except:
             new_image.delete()
-            return HttpResponse("something went wrong", status=status.HTTP_400_BAD_REQUEST)
+            return HttpResponse("something went wrong while inserting the image.", status=status.HTTP_400_BAD_REQUEST)
 
         id_vector = cache.get('id_vector')
         descriptor_matrix = cache.get('descriptor_matrix')
 
-        if not descriptor_matrix:
-            id_vector = []
-            descriptor_matrix = []
-            for image in Image.objects.all():
-                s = image.signature
-                descriptor = np.array(s)
-                descriptor_matrix.append(descriptor)
-                id_vector.append(image.id)
-
-            cache.set('id_vector', id_vector)
-            cache.set('descriptor_matrix', descriptor_matrix)
-        else:
+        if descriptor_matrix:
             s = new_image.signature
             descriptor = np.array(s)
             descriptor_matrix.append(descriptor)

@@ -61,7 +61,7 @@ def extract_feat_CNN(img_path):
     return norm_feat
 
 
-def extract_feat_FCL(img_path, predict_tags):
+def extract_feat_FCL(img, predict_tags):
     # weights: 'imagenet'
     # pooling: 'max' or 'avg'
     # input_shape: (width, height, 3), width and height should >= 48
@@ -71,7 +71,6 @@ def extract_feat_FCL(img_path, predict_tags):
     model = VGG16(weights='imagenet', input_shape=(input_shape[0], input_shape[1], input_shape[2]), pooling='max',
                   include_top=True)
 
-    img = image.load_img(img_path, target_size=(input_shape[0], input_shape[1]))
     img = image.img_to_array(img)
     img = np.expand_dims(img, axis=0)
     img = preprocess_input(img)
@@ -95,5 +94,36 @@ def extract_feat_FCL(img_path, predict_tags):
 
     if predict_tags:
         return feat, tags_matrix[0]
+
+    return feat
+
+def extract_feat_FCL_from_img(img):
+    # weights: 'imagenet'
+    # pooling: 'max' or 'avg'
+    # input_shape: (width, height, 3), width and height should >= 48
+
+    input_shape = (224, 224, 3)
+
+    model = VGG16(weights='imagenet', input_shape=(input_shape[0], input_shape[1], input_shape[2]), pooling='max',
+                  include_top=True)
+
+    img = image.img_to_array(img)
+    img = np.expand_dims(img, axis=0)
+    img = preprocess_input(img)
+
+    layer_name = "fc2"
+    intermediate_layer_model = Model(inputs=model.input,
+                                     outputs=model.get_layer(layer_name).output)
+    feat = intermediate_layer_model.predict(img)
+
+
+    #norm_feat = feat[0] / LA.norm(feat[0])
+
+    K.clear_session()
+    use_fv_processing = True
+
+    #if use_fv_processing:
+    #    norm_feat = process_desc(norm_feat)
+
 
     return feat

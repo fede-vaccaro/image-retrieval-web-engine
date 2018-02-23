@@ -10,5 +10,5 @@ urlpatterns = [
     url(r'^get_image/(?P<pk>[-\w]+)/$', views.get_image),
     url(r'^retrieve_by_tag/(?P<tag>[-\w]+)/$', csrf_exempt(views.RetrieveByTagView.as_view())),
     url(r'^explore/(?P<pk>[0-9]+)/$', csrf_exempt(views.ExploreView.as_view())),
-    url(r'^query_get/(?P<img_name>[-\w]+)/$', csrf_exempt(views.QueryGetView.as_view())),
+    url(r'^query_get/(?P<identifier>[-\w]+)/$', csrf_exempt(views.QueryGetView.as_view())),
 ]
