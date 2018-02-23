@@ -24,7 +24,7 @@ def get_tags(input):
         tags = []
         for prediction in img:
             id, name, odd = prediction
-            if odd > 0:
+            if odd > 0.25:
                 tags.append(name)
         tags_matrix.append(tags)
     return tags_matrix
@@ -82,7 +82,7 @@ def extract_feat_FCL(img_path):
 
     #norm_feat = feat[0] / LA.norm(feat[0])
 
-    # K.clear_session()
+    K.clear_session()
     use_fv_processing = True
 
     #if use_fv_processing:
