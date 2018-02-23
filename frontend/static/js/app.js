@@ -1,4 +1,4 @@
-var myApp = angular.module('myApp', ["ngRoute", "ngAnimate"]);
+var myApp = angular.module('myApp', ["ngRoute"]);
 
 myApp.controller('mainCtrl', ['$scope', '$rootScope', function ($scope, $rootScope) {
 
@@ -248,6 +248,8 @@ myApp.controller('listCtrl', ['$scope', '$http', '$rootScope', '$window', functi
         }, function (response) {
         })
         $scope.showOverlay = false;
+        $scope.disableExplore();
+        $scope.exploring = false;
     }
 
 
@@ -318,10 +320,17 @@ myApp.controller('listCtrl', ['$scope', '$http', '$rootScope', '$window', functi
 
     $scope.showOverlay = false;
     $scope.imageToShow;
+    $scope.explore_var;
 
     $scope.showImage = function (imageToShow) {
-        $scope.showOverlay = true;
-        $scope.imageToShow = imageToShow;
+        if(!$scope.explore_var) {
+            $scope.showOverlay = true;
+            $scope.imageToShow = imageToShow;
+        }
+        else{
+            $scope.pages.current = 1;
+            $scope.explore(imageToShow.pk);
+        }
     }
 
 }])

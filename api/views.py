@@ -17,7 +17,8 @@ from django.core.cache import cache
 from taggit.models import Tag
 import os, time, math
 import numpy as np
-import heapq
+import numexpr as ne
+import uuid
 
 
 def query_over_db(query_signature, page):
@@ -41,11 +42,15 @@ def query_over_db(query_signature, page):
 
     t1 = time.time()
     print("time to pull out the descriptors : " + str(t1 - t0))
+    t1 = time.time()
     #result = np.abs(np.dot(descriptor_matrix, query_signature.T))
-    result = np.sum((descriptor_matrix - query_signature)**2, axis=1)
+
+    #result = np.sum((descriptor_matrix - query_signature)**2, axis=1)
+
+    result = ne.evaluate('sum((descriptor_matrix - query_signature)**2, axis=1)')
 
     t2 = time.time()
-    print("time to make the big dot product: " + str(t2 - t1))
+    print("time to calculate similarity: " + str(t2 - t1))
 
     perm = np.argsort(result)[(page - 1) * 30:page * 30]
     perm_id = np.array(id_vector)[perm]
@@ -67,59 +72,6 @@ def query_over_db(query_signature, page):
     print("time to get the results from the DB : " + str(t3 - t2))
     print("total time : " + str(t3 - t0))
     print(result[perm])
-    return qs_new
-
-
-def query_over_db_(query_signature, page):
-    t0 = time.time()
-
-    descriptor_matrix = cache.get('descriptor_matrix')
-    id_vector = cache.get('id_vector')
-
-    if not descriptor_matrix:
-        id_vector = []
-        descriptor_matrix = []
-        images_dict = Image.objects.all().values('id', 'signature')
-        for image in images_dict:
-            s = image['signature']
-            descriptor = np.array(s)
-            descriptor_matrix.append(descriptor)
-            id_vector.append(image['id'])
-
-        cache.set('id_vector', id_vector)
-        cache.set('descriptor_matrix', descriptor_matrix)
-
-    t1 = time.time()
-    print("time to pull out the descriptors : " + str(t1 - t0))
-
-    result = np.dot(descriptor_matrix, query_signature)
-
-    t2 = time.time()
-    print("time to make the big dot product: " + str(t2 - t1))
-
-    value_dict = []
-
-    for i in range(len(id_vector)):
-        heapq.heappush(value_dict, (1 - result[i], id_vector[i]))
-
-    page_size = api_settings.PAGE_SIZE
-    value_dict = value_dict[(page - 1) * page_size:page * page_size]
-
-    t4 = time.time()
-
-    print("time to order the result: " + str(t4 - t2))
-
-    db = Image.objects.defer('signature').filter(id__in=[j for i, j in value_dict])
-
-    qs_new = [None] * page_size
-    i = 0
-    for value, id in value_dict:
-        qs_new[i] = db.get(id=id)
-        i += 1
-
-    t3 = time.time()
-    print("time to get the results from the DB : " + str(t3 - t2))
-    print("total time : " + str(t3 - t0))
     return qs_new
 
 
@@ -245,8 +197,8 @@ class QueryGetView(generics.ListAPIView):
         print("start counting")
         t1 = time.time()
 
-        query_signature, _ = extract_feat_FCL(
-            settings.MEDIA_ROOT + "/temp/" + img_name + ".jpg")  # a NumPy-Array object
+        query_signature = extract_feat_FCL(
+            settings.MEDIA_ROOT + "/temp/" + img_name + ".jpg", False)  # a NumPy-Array object
         qs_new = query_over_db(query_signature, int(request.GET['page']))
 
         t2 = time.time()
@@ -280,12 +232,16 @@ class ImageUploadView(views.APIView):
             return HttpResponse(err.message, status=status.HTTP_400_BAD_REQUEST)
         except:
             return HttpResponse("something went wrong.", status=status.HTTP_400_BAD_REQUEST)
-        new_image = Image.objects.create(title=title_, quote=quote_, image=ImageFile(img))
-        signature_, tags = extract_feat_FCL(settings.BASE_DIR + "/" + new_image.image.name)
-        new_image.signature = signature_[0].tolist()
-        for tag in tags:
-            new_image.tags.add(tag)
-        new_image.save()
+        try:
+            new_image = Image.objects.create(title=title_, quote=quote_, image=ImageFile(img))
+            signature_, tags = extract_feat_FCL(settings.BASE_DIR + "/" + new_image.image.name, True)
+            new_image.signature = signature_[0].tolist()
+            for tag in tags:
+                new_image.tags.add(tag)
+            new_image.save()
+        except:
+            new_image.delete()
+            return HttpResponse("something went wrong", status=status.HTTP_400_BAD_REQUEST)
 
         id_vector = cache.get('id_vector')
         descriptor_matrix = cache.get('descriptor_matrix')

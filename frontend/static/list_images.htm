@@ -2,18 +2,18 @@
     <div ng-repeat="image in imageList">
         <div class="image">
 
-            <div ng-show="!explore_var">
+            <div ng-show="!hw">
                 <a ng-href="" ng-click="showImage(image);">
                     <img class="myImg" ng-src="{{ image.image }}"></a><br/>
                 <div class='info'> {{ image.title }}</div>
             </div>
 
 
-            <div ng-show="explore_var">
+            <!--<div ng-show="explore_var">
                 <img class="myImg" ng-click="pages.current = 1; explore(image.pk)" ng-src="{{ image.image }}"
                      width="200"><br/>
                 <div class='info'> {{ image.title }}</div>
-            </div>
+            </div>-->
         </div>
 
     </div>

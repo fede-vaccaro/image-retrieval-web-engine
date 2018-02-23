@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 # Author: yongyuan.name
+#import os
+#os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152
+#os.environ["CUDA_VISIBLE_DEVICES"] = ""
 import sys, os
 import numpy as np
 from numpy import linalg as LA
@@ -58,7 +61,7 @@ def extract_feat_CNN(img_path):
     return norm_feat
 
 
-def extract_feat_FCL(img_path):
+def extract_feat_FCL(img_path, predict_tags):
     # weights: 'imagenet'
     # pooling: 'max' or 'avg'
     # input_shape: (width, height, 3), width and height should >= 48
@@ -77,8 +80,10 @@ def extract_feat_FCL(img_path):
     intermediate_layer_model = Model(inputs=model.input,
                                      outputs=model.get_layer(layer_name).output)
     feat = intermediate_layer_model.predict(img)
-    predictions = model.predict(img)
-    tags_matrix = get_tags(predictions)
+
+    if predict_tags:
+        predictions = model.predict(img)
+        tags_matrix = get_tags(predictions)
 
     #norm_feat = feat[0] / LA.norm(feat[0])
 
@@ -88,5 +93,7 @@ def extract_feat_FCL(img_path):
     #if use_fv_processing:
     #    norm_feat = process_desc(norm_feat)
 
+    if predict_tags:
+        return feat, tags_matrix[0]
 
-    return feat, tags_matrix[0]
+    return feat
