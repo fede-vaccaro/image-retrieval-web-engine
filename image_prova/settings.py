@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'taggit',
     'taggit_serializer',
+    'sorl.thumbnail',
+    'sorl_thumbnail_serializer'
 ]
 
 MIDDLEWARE = [
@@ -134,6 +136,7 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'unique-snowflake',
+        'TIMEOUT': None,
     }
 }
 

@@ -57,7 +57,11 @@ def query_over_db(query_signature, page):
     print("time to calculate similarity: " + str(t2 - t1))
 
     perm = np.argsort(result)[(page - 1) * 30:page * 30]
+    print(perm.shape)
+    print(len(id_vector))
+
     perm_id = np.array(id_vector)[perm]
+    print(len(perm_id))
 
     print("printing sort")
     print(np.sort(result)[0])
